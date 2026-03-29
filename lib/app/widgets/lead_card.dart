@@ -7,14 +7,14 @@ import 'package:intl/intl.dart';
 class LeadCard extends StatelessWidget {
   final LeadModel lead;
   final VoidCallback? onTap;
-  final VoidCallback? onDelete;
+  final Function(LeadStatus)? onStatusChanged;
   final String? heroTag;
 
   const LeadCard({
     super.key,
     required this.lead,
     this.onTap,
-    this.onDelete,
+    this.onStatusChanged,
     this.heroTag,
   });
 
@@ -87,7 +87,10 @@ class LeadCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      StatusChip(status: lead.status),
+                      _StatusDropdown(
+                        currentStatus: lead.status,
+                        onChanged: onStatusChanged,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -125,6 +128,41 @@ class LeadCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _StatusDropdown extends StatelessWidget {
+  final LeadStatus currentStatus;
+  final Function(LeadStatus)? onChanged;
+
+  const _StatusDropdown({
+    required this.currentStatus,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<LeadStatus>(
+      initialValue: currentStatus,
+      padding: EdgeInsets.zero,
+      onSelected: onChanged,
+      child: StatusChip(status: currentStatus),
+      itemBuilder: (context) => LeadStatus.values.map((status) {
+        return PopupMenuItem<LeadStatus>(
+          value: status,
+          child: Row(
+            children: [
+              if (status == currentStatus)
+                const Icon(Icons.check, size: 18, color: AppColors.primary)
+              else
+                const SizedBox(width: 18),
+              const SizedBox(width: 8),
+              Text(status.label),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

@@ -48,6 +48,8 @@ class LeadModel {
   int avatarIndex;
   String? company;
   String? source;
+  final double? revenue;
+  final int connectedCallsCount;
 
   LeadModel({
     required this.id,
@@ -60,6 +62,8 @@ class LeadModel {
     required this.avatarIndex,
     this.company,
     this.source,
+    this.revenue = 0.0,
+    this.connectedCallsCount = 0,
   });
 
   LeadModel copyWith({
@@ -73,6 +77,8 @@ class LeadModel {
     int? avatarIndex,
     String? company,
     String? source,
+    double? revenue,
+    int? connectedCallsCount,
   }) {
     return LeadModel(
       id: id ?? this.id,
@@ -85,6 +91,8 @@ class LeadModel {
       avatarIndex: avatarIndex ?? this.avatarIndex,
       company: company ?? this.company,
       source: source ?? this.source,
+      revenue: revenue ?? this.revenue,
+      connectedCallsCount: connectedCallsCount ?? this.connectedCallsCount,
     );
   }
 }

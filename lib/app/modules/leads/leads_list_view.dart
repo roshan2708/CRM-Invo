@@ -197,6 +197,8 @@ class LeadsListView extends StatelessWidget {
                     child: LeadCard(
                       lead: lead,
                       heroTag: 'list_${lead.id}',
+                      onStatusChanged: (status) =>
+                          ctrl.updateLeadStatus(lead.id, status),
                       onTap: () =>
                           Get.toNamed(AppRoutes.leadDetail, arguments: lead.id),
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../modules/leads/lead_controller.dart';
 import '../../modules/activity/activity_controller.dart';
 import '../../modules/auth/auth_controller.dart';
@@ -7,6 +8,7 @@ import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/lead_card.dart';
 import '../../data/models/user_model.dart';
+import '../../data/models/lead_model.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
@@ -335,10 +337,17 @@ class _AdminDashboard extends StatelessWidget {
                         onTap: () => Get.toNamed(AppRoutes.leads),
                       ),
                       _StatCard(
-                        label: 'New Leads',
-                        value: leads.newLeads.toString(),
-                        icon: Icons.fiber_new_rounded,
-                        color: const Color(0xFF06B6D4),
+                        label: 'Today Follow-ups',
+                        value: activities.todayFollowupsCount.toString(),
+                        icon: Icons.notifications_active_rounded,
+                        color: const Color(0xFFEC4899),
+                        onTap: () => Get.toNamed(AppRoutes.activity),
+                      ),
+                      _StatCard(
+                        label: 'Revenue',
+                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.totalRevenue),
+                        icon: Icons.currency_rupee_rounded,
+                        color: const Color(0xFF0F766E),
                       ),
                       _StatCard(
                         label: 'Converted',
@@ -347,25 +356,10 @@ class _AdminDashboard extends StatelessWidget {
                         color: const Color(0xFF10B981),
                       ),
                       _StatCard(
-                        label: 'Interested',
-                        value: leads.interestedLeads.toString(),
-                        icon: Icons.stars_rounded,
-                        color: const Color(0xFFF59E0B),
-                      ),
-                      _StatCard(
-                        label: 'Follow-ups',
-                        value: activities.pendingCount.toString(),
-                        icon: Icons.notifications_active_rounded,
-                        color: const Color(0xFFEC4899),
-                        onTap: () => Get.toNamed(AppRoutes.activity),
-                      ),
-                      _StatCard(
-                        label: 'Conv. Rate',
-                        value: leads.totalLeads > 0
-                            ? '${((leads.convertedLeads / leads.totalLeads) * 100).toStringAsFixed(0)}%'
-                            : '0%',
-                        icon: Icons.trending_up_rounded,
-                        color: const Color(0xFF0F766E),
+                        label: 'Connected Calls',
+                        value: leads.todayConnectedCalls.toString(),
+                        icon: Icons.call_made_rounded,
+                        color: const Color(0xFF06B6D4),
                       ),
                     ],
                   ),
@@ -461,6 +455,8 @@ class _AdminDashboard extends StatelessWidget {
                   (_, i) => LeadCard(
                     lead: recent[i],
                     heroTag: 'admin_${recent[i].id}',
+                    onStatusChanged: (status) =>
+                        leads.updateLeadStatus(recent[i].id, status),
                     onTap: () => Get.toNamed(
                       AppRoutes.leadDetail,
                       arguments: recent[i].id,
@@ -518,11 +514,18 @@ class _ManagerDashboard extends StatelessWidget {
                     childAspectRatio: 1.55,
                     children: [
                       _StatCard(
-                        label: 'Total Pipeline',
+                        label: 'Total Leads',
                         value: leads.totalLeads.toString(),
                         icon: Icons.people_alt_rounded,
                         color: const Color(0xFF4F46E5),
                         onTap: () => Get.toNamed(AppRoutes.leads),
+                      ),
+                      _StatCard(
+                        label: 'Follow-ups',
+                        value: activities.todayFollowupsCount.toString(),
+                        icon: Icons.notifications_active_rounded,
+                        color: const Color(0xFFEC4899),
+                        onTap: () => Get.toNamed(AppRoutes.activity),
                       ),
                       _StatCard(
                         label: 'Converted',
@@ -531,19 +534,10 @@ class _ManagerDashboard extends StatelessWidget {
                         color: const Color(0xFF10B981),
                       ),
                       _StatCard(
-                        label: 'Pending F/U',
-                        value: activities.pendingCount.toString(),
-                        icon: Icons.notifications_active_rounded,
-                        color: const Color(0xFFF59E0B),
-                        onTap: () => Get.toNamed(AppRoutes.activity),
-                      ),
-                      _StatCard(
-                        label: 'Conv. Rate',
-                        value: leads.totalLeads > 0
-                            ? '${((leads.convertedLeads / leads.totalLeads) * 100).toStringAsFixed(0)}%'
-                            : '0%',
-                        icon: Icons.trending_up_rounded,
-                        color: const Color(0xFF0F766E),
+                        label: 'Connected Calls',
+                        value: leads.todayConnectedCalls.toString(),
+                        icon: Icons.call_made_rounded,
+                        color: const Color(0xFF06B6D4),
                       ),
                     ],
                   ),
@@ -687,6 +681,8 @@ class _ManagerDashboard extends StatelessWidget {
                   (_, i) => LeadCard(
                     lead: recent[i],
                     heroTag: 'mgr_${recent[i].id}',
+                    onStatusChanged: (status) =>
+                        leads.updateLeadStatus(recent[i].id, status),
                     onTap: () => Get.toNamed(
                       AppRoutes.leadDetail,
                       arguments: recent[i].id,
@@ -733,60 +729,53 @@ class _SalesRepDashboard extends StatelessWidget {
               child: Obx(() {
                 final myLeads = leads.recentLeads.take(6).toList();
                 final myConverted = myLeads
-                    .where((l) => l.status.label == 'Converted')
+                    .where((l) => l.status == LeadStatus.converted)
                     .length;
-                final myPending = activities.pendingCount;
+                final myPending = activities.todayFollowupsCount;
                 return Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: size.width * 0.04,
                     vertical: size.width * 0.03,
                   ),
-                  child: Column(
+                  child: GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: size.width * 0.03,
+                    mainAxisSpacing: size.width * 0.03,
+                    childAspectRatio: 1.5,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _StatCard(
-                              label: 'My Leads',
-                              value: myLeads.length.toString(),
-                              icon: Icons.person_pin_rounded,
-                              color: const Color(0xFF4F46E5),
-                              onTap: () => Get.toNamed(AppRoutes.leads),
-                            ),
-                          ),
-                          SizedBox(width: size.width * 0.03),
-                          Expanded(
-                            child: _StatCard(
-                              label: 'Converted',
-                              value: myConverted.toString(),
-                              icon: Icons.verified_rounded,
-                              color: const Color(0xFF10B981),
-                            ),
-                          ),
-                        ],
+                      _StatCard(
+                        label: 'My Leads',
+                        value: myLeads.length.toString(),
+                        icon: Icons.person_pin_rounded,
+                        color: const Color(0xFF4F46E5),
+                        onTap: () => Get.toNamed(AppRoutes.leads),
                       ),
-                      SizedBox(height: size.width * 0.03),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _StatCard(
-                              label: 'Follow-ups',
-                              value: myPending.toString(),
-                              icon: Icons.alarm_rounded,
-                              color: const Color(0xFFF59E0B),
-                              onTap: () => Get.toNamed(AppRoutes.activity),
-                            ),
-                          ),
-                          SizedBox(width: size.width * 0.03),
-                          Expanded(
-                            child: _StatCard(
-                              label: 'Target',
-                              value: '75%',
-                              icon: Icons.flag_rounded,
-                              color: const Color(0xFFEC4899),
-                            ),
-                          ),
-                        ],
+                      _StatCard(
+                        label: 'Today Follow-ups',
+                        value: myPending.toString(),
+                        icon: Icons.alarm_rounded,
+                        color: const Color(0xFFF59E0B),
+                        onTap: () => Get.toNamed(AppRoutes.activity),
+                      ),
+                      _StatCard(
+                        label: 'Converted',
+                        value: myConverted.toString(),
+                        icon: Icons.verified_rounded,
+                        color: const Color(0xFF10B981),
+                      ),
+                      _StatCard(
+                        label: 'Connected',
+                        value: leads.todayConnectedCalls.toString(),
+                        icon: Icons.call_made_rounded,
+                        color: const Color(0xFF06B6D4),
+                      ),
+                      _StatCard(
+                        label: 'Revenue',
+                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.totalRevenue),
+                        icon: Icons.currency_rupee_rounded,
+                        color: const Color(0xFF0F766E),
                       ),
                     ],
                   ),

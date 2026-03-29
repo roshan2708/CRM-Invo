@@ -73,6 +73,14 @@ class LeadController extends GetxController {
     }
   }
 
+  void updateLeadStatus(String id, LeadStatus newStatus) {
+    final idx = _allLeads.indexWhere((l) => l.id == id);
+    if (idx != -1) {
+      _allLeads[idx] = _allLeads[idx].copyWith(status: newStatus);
+      _applyFilters();
+    }
+  }
+
   // Dashboard stats
   int get totalLeads => _allLeads.length;
   int get newLeads =>
@@ -81,6 +89,12 @@ class LeadController extends GetxController {
       _allLeads.where((l) => l.status == LeadStatus.converted).length;
   int get interestedLeads =>
       _allLeads.where((l) => l.status == LeadStatus.interested).length;
+
+  double get totalRevenue =>
+      _allLeads.fold(0.0, (sum, l) => sum + (l.revenue ?? 0.0));
+
+  int get todayConnectedCalls =>
+      _allLeads.fold(0, (sum, l) => sum + l.connectedCallsCount);
 
   List<LeadModel> get recentLeads => List.from(_allLeads.take(5));
 }

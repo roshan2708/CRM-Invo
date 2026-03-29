@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../modules/leads/lead_controller.dart';
+import '../../modules/auth/auth_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_text_field.dart';
@@ -23,6 +24,8 @@ class _AddLeadViewState extends State<AddLeadView> {
   final _notesCtrl = TextEditingController();
   final _companyCtrl = TextEditingController();
   final _sourceCtrl = TextEditingController();
+  final _revenueCtrl = TextEditingController();
+  final _callsCtrl = TextEditingController();
 
   LeadStatus _selectedStatus = LeadStatus.newLead;
   DateTime _selectedDate = DateTime.now();
@@ -30,6 +33,9 @@ class _AddLeadViewState extends State<AddLeadView> {
   String? _editId;
 
   final LeadController _ctrl = Get.find();
+  final AuthController _auth = Get.find();
+
+  bool get _canEditSensitive => !_isEdit || _auth.isAdmin;
 
   @override
   void initState() {
@@ -48,7 +54,9 @@ class _AddLeadViewState extends State<AddLeadView> {
         _companyCtrl.text = lead.company ?? '';
         _sourceCtrl.text = lead.source ?? '';
         _selectedStatus = lead.status;
-        _selectedDate = lead.date;
+         _selectedDate = lead.date;
+        _revenueCtrl.text = lead.revenue?.toString() ?? '0';
+        _callsCtrl.text = lead.connectedCallsCount.toString();
       }
     }
   }
@@ -61,6 +69,8 @@ class _AddLeadViewState extends State<AddLeadView> {
     _notesCtrl.dispose();
     _companyCtrl.dispose();
     _sourceCtrl.dispose();
+    _revenueCtrl.dispose();
+    _callsCtrl.dispose();
     super.dispose();
   }
 
@@ -84,6 +94,8 @@ class _AddLeadViewState extends State<AddLeadView> {
                 : _sourceCtrl.text.trim(),
             status: _selectedStatus,
             date: _selectedDate,
+            revenue: double.tryParse(_revenueCtrl.text.trim()) ?? 0.0,
+            connectedCallsCount: int.tryParse(_callsCtrl.text.trim()) ?? 0,
           ),
         );
       }
@@ -114,6 +126,8 @@ class _AddLeadViewState extends State<AddLeadView> {
           status: _selectedStatus,
           date: _selectedDate,
           avatarIndex: DateTime.now().millisecond % 8,
+          revenue: double.tryParse(_revenueCtrl.text.trim()) ?? 0.0,
+          connectedCallsCount: int.tryParse(_callsCtrl.text.trim()) ?? 0,
         ),
       );
       Get.back();
@@ -173,10 +187,19 @@ class _AddLeadViewState extends State<AddLeadView> {
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
+                enabled: _canEditSensitive || _phoneCtrl.text.isEmpty,
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? 'Phone is required'
                     : null,
               ),
+              if (!_canEditSensitive && _phoneCtrl.text.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, left: 4),
+                  child: Text(
+                    'Only admin can edit phone number',
+                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
+                  ),
+                ),
               SizedBox(height: size.height * 0.025),
               CustomTextField(
                 label: 'Email *',
@@ -185,6 +208,7 @@ class _AddLeadViewState extends State<AddLeadView> {
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
+                enabled: _canEditSensitive || _emailCtrl.text.isEmpty,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Email is required';
                   if (!RegExp(
@@ -194,6 +218,14 @@ class _AddLeadViewState extends State<AddLeadView> {
                   return null;
                 },
               ),
+              if (!_canEditSensitive && _emailCtrl.text.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, left: 4),
+                  child: Text(
+                    'Only admin can edit email',
+                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
+                  ),
+                ),
               SizedBox(height: size.height * 0.025),
               CustomTextField(
                 label: 'Company',
@@ -209,6 +241,32 @@ class _AddLeadViewState extends State<AddLeadView> {
                 controller: _sourceCtrl,
                 prefixIcon: Icons.source_outlined,
                 textInputAction: TextInputAction.next,
+              ),
+              SizedBox(height: size.height * 0.025),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Revenue (₹)',
+                      hint: '0',
+                      controller: _revenueCtrl,
+                      prefixIcon: Icons.currency_rupee_rounded,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                  SizedBox(width: size.width * 0.03),
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Calls Connected',
+                      hint: '0',
+                      controller: _callsCtrl,
+                      prefixIcon: Icons.call_made_rounded,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: size.height * 0.025),
               // Status

@@ -106,6 +106,25 @@ class LeadDetailView extends StatelessWidget {
                   ],
                 ),
               ),
+              // Performance info
+              _SectionCard(
+                title: 'Lead Performance',
+                children: [
+                  _InfoRow(
+                    icon: Icons.currency_rupee_rounded,
+                    label: 'Revenue',
+                    value: NumberFormat.currency(
+                      symbol: '₹',
+                      decimalDigits: 0,
+                    ).format(lead.revenue ?? 0.0),
+                  ),
+                  _InfoRow(
+                    icon: Icons.call_made_rounded,
+                    label: 'Connected Calls',
+                    value: lead.connectedCallsCount.toString(),
+                  ),
+                ],
+              ),
               // Contact info
               _SectionCard(
                 title: 'Contact Information',

@@ -34,4 +34,15 @@ class ActivityController extends GetxController {
       activities.where((a) => !a.isDone).toList();
 
   int get pendingCount => pendingActivities.length;
+
+  int get todayFollowupsCount {
+    final now = DateTime.now();
+    return activities.where((a) =>
+      a.type == ActivityType.followUp &&
+      !a.isDone &&
+      a.dateTime.year == now.year &&
+      a.dateTime.month == now.month &&
+      a.dateTime.day == now.day
+    ).length;
+  }
 }

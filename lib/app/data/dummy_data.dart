@@ -70,6 +70,8 @@ class DummyData {
       avatarIndex: 1,
       company: 'Infosys Ltd.',
       source: 'LinkedIn',
+      revenue: 240000.0,
+      connectedCallsCount: 5,
     ),
     LeadModel(
       id: 'l002',
@@ -82,6 +84,7 @@ class DummyData {
       avatarIndex: 2,
       company: 'TechMahindra',
       source: 'Website',
+      connectedCallsCount: 8,
     ),
     LeadModel(
       id: 'l003',
@@ -130,6 +133,8 @@ class DummyData {
       avatarIndex: 6,
       company: 'Reliance Jio',
       source: 'Event',
+      revenue: 150000.0,
+      connectedCallsCount: 3,
     ),
     LeadModel(
       id: 'l007',
@@ -214,6 +219,8 @@ class DummyData {
       avatarIndex: 5,
       company: 'Hexaware',
       source: 'LinkedIn',
+      revenue: 120000.0,
+      connectedCallsCount: 2,
     ),
     LeadModel(
       id: 'l014',
