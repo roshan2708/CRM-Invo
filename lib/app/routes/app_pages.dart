@@ -14,6 +14,10 @@ import '../modules/profile/profile_view.dart';
 import '../modules/settings/settings_view.dart';
 import '../modules/splash/splash_view.dart';
 import '../modules/theme_controller.dart';
+import '../modules/calls/call_controller.dart';
+import '../modules/calls/call_history_view.dart';
+import '../modules/calls/call_detail_view.dart';
+import '../modules/calls/call_analytics_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -49,6 +53,7 @@ class AppPages {
       binding: BindingsBuilder(() {
         Get.lazyPut(() => LeadController(), fenix: true);
         Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
       }),
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 400),
@@ -86,6 +91,27 @@ class AppPages {
     GetPage(
       name: AppRoutes.settings,
       page: () => const SettingsView(),
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.callHistory,
+      page: () => const CallHistoryView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.callDetail,
+      page: () => const CallDetailView(),
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.callAnalytics,
+      page: () => const CallAnalyticsView(),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 300),
     ),

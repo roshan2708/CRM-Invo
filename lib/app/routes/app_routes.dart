@@ -12,4 +12,7 @@ class AppRoutes {
   static const String activity = '/activity';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String callHistory = '/call-history';
+  static const String callDetail = '/call-detail';
+  static const String callAnalytics = '/call-analytics';
 }

@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../modules/leads/lead_controller.dart';
 import '../../modules/activity/activity_controller.dart';
+import '../../modules/calls/call_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/status_chip.dart';
 import '../../data/models/lead_model.dart';
+import '../../data/models/call_log_model.dart';
 
 class LeadDetailView extends StatelessWidget {
   const LeadDetailView({super.key});
@@ -17,6 +19,7 @@ class LeadDetailView extends StatelessWidget {
     final String leadId = Get.arguments as String;
     final ctrl = Get.find<LeadController>();
     final actCtrl = Get.find<ActivityController>();
+    final callCtrl = Get.find<CallController>();
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
 
@@ -103,6 +106,24 @@ class LeadDetailView extends StatelessWidget {
                     ],
                     SizedBox(height: size.width * 0.03),
                     StatusChip(status: lead.status),
+                    SizedBox(height: size.width * 0.04),
+                    // Call Now Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => callCtrl.initiateCall(lead),
+                        icon: const Icon(Icons.call_rounded, size: 18),
+                        label: const Text('Call Now'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -118,13 +139,110 @@ class LeadDetailView extends StatelessWidget {
                       decimalDigits: 0,
                     ).format(lead.revenue ?? 0.0),
                   ),
-                  _InfoRow(
-                    icon: Icons.call_made_rounded,
-                    label: 'Connected Calls',
-                    value: lead.connectedCallsCount.toString(),
-                  ),
+                  Obx(() {
+                    final count = callCtrl.logsForLead(lead.id).length;
+                    return _InfoRow(
+                      icon: Icons.call_made_rounded,
+                      label: 'Connected Calls',
+                      value: count.toString(),
+                    );
+                  }),
                 ],
               ),
+              // Call History section
+              Obx(() {
+                final callLogs = callCtrl.logsForLead(lead.id);
+                return _SectionCard(
+                  title: 'Call History (${callLogs.length})',
+                  trailing: TextButton(
+                    onPressed: () => Get.toNamed(AppRoutes.callHistory),
+                    child: const Text('View All'),
+                  ),
+                  children: callLogs.isEmpty
+                      ? [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              'No calls yet. Tap Call Now to get started.',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ),
+                        ]
+                      : callLogs.take(3).map((log) {
+                          final typeColor = log.callType == CallType.outgoing
+                              ? AppColors.success
+                              : AppColors.error;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: GestureDetector(
+                              onTap: () => Get.toNamed(
+                                AppRoutes.callDetail,
+                                arguments: log.id,
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      color: typeColor.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      log.callType == CallType.outgoing
+                                          ? Icons.call_made_rounded
+                                          : Icons.call_missed_rounded,
+                                      color: typeColor,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          log.callType.label,
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${log.formattedDuration}  •  ${DateFormat('dd MMM, hh:mm a').format(log.startTime)}',
+                                          style: theme.textTheme.labelSmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (log.tag != CallTag.none)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: _tagColor(log.tag)
+                                            .withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        log.tag.label,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: _tagColor(log.tag),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                );
+              }),
               // Contact info
               _SectionCard(
                 title: 'Contact Information',
@@ -245,6 +363,19 @@ class LeadDetailView extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Color _tagColor(CallTag tag) {
+    switch (tag) {
+      case CallTag.interested:
+        return AppColors.success;
+      case CallTag.followUp:
+        return const Color(0xFFF59E0B);
+      case CallTag.notInterested:
+        return AppColors.error;
+      case CallTag.none:
+        return AppColors.primary;
+    }
   }
 
   void _confirmDelete(

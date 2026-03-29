@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../modules/leads/lead_controller.dart';
 import '../../modules/activity/activity_controller.dart';
 import '../../modules/auth/auth_controller.dart';
+import '../../modules/calls/call_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/lead_card.dart';
@@ -59,6 +60,12 @@ class _BottomNav extends StatelessWidget {
                 label: 'Leads',
                 route: AppRoutes.leads,
                 active: active == 'leads',
+              ),
+              _NavItem(
+                icon: Icons.call_rounded,
+                label: 'Calls',
+                route: AppRoutes.callHistory,
+                active: active == 'calls',
               ),
               _NavItem(
                 icon: Icons.event_note_rounded,
@@ -304,6 +311,7 @@ class _AdminDashboard extends StatelessWidget {
     final leads = Get.find<LeadController>();
     final activities = Get.find<ActivityController>();
     final auth = Get.find<AuthController>();
+    final callCtrl = Get.find<CallController>();
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
     return Scaffold(
@@ -357,9 +365,10 @@ class _AdminDashboard extends StatelessWidget {
                       ),
                       _StatCard(
                         label: 'Connected Calls',
-                        value: leads.todayConnectedCalls.toString(),
+                        value: callCtrl.connectedCallsCount.toString(),
                         icon: Icons.call_made_rounded,
                         color: const Color(0xFF06B6D4),
+                        onTap: () => Get.toNamed(AppRoutes.callHistory),
                       ),
                     ],
                   ),
@@ -488,6 +497,7 @@ class _ManagerDashboard extends StatelessWidget {
     final leads = Get.find<LeadController>();
     final activities = Get.find<ActivityController>();
     final auth = Get.find<AuthController>();
+    final callCtrl = Get.find<CallController>();
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
     return Scaffold(
@@ -535,9 +545,10 @@ class _ManagerDashboard extends StatelessWidget {
                       ),
                       _StatCard(
                         label: 'Connected Calls',
-                        value: leads.todayConnectedCalls.toString(),
+                        value: callCtrl.connectedCallsCount.toString(),
                         icon: Icons.call_made_rounded,
                         color: const Color(0xFF06B6D4),
+                        onTap: () => Get.toNamed(AppRoutes.callHistory),
                       ),
                     ],
                   ),
@@ -714,6 +725,7 @@ class _SalesRepDashboard extends StatelessWidget {
     final leads = Get.find<LeadController>();
     final activities = Get.find<ActivityController>();
     final auth = Get.find<AuthController>();
+    final callCtrl = Get.find<CallController>();
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
     // Sales rep sees "their" leads = last 5 leads in list (simulated)
@@ -767,9 +779,10 @@ class _SalesRepDashboard extends StatelessWidget {
                       ),
                       _StatCard(
                         label: 'Connected',
-                        value: leads.todayConnectedCalls.toString(),
+                        value: callCtrl.connectedCallsCount.toString(),
                         icon: Icons.call_made_rounded,
                         color: const Color(0xFF06B6D4),
+                        onTap: () => Get.toNamed(AppRoutes.callHistory),
                       ),
                       _StatCard(
                         label: 'Revenue',
@@ -861,8 +874,8 @@ class _SalesRepDashboard extends StatelessWidget {
                     Expanded(
                       child: _QuickAction(
                         icon: Icons.phone_callback_rounded,
-                        label: 'Log Call',
-                        onTap: () => Get.toNamed(AppRoutes.activity),
+                        label: 'Call History',
+                        onTap: () => Get.toNamed(AppRoutes.callHistory),
                         color: const Color(0xFF06B6D4),
                       ),
                     ),
