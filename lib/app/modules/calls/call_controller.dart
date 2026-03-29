@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../data/dummy_data.dart';
 import '../../data/models/call_log_model.dart';
 import '../../data/models/lead_model.dart';
+import 'call_overlay_widget.dart';
 
 enum RecordingStatus { supported, notSupported, denied }
 
@@ -29,6 +30,7 @@ class CallController extends GetxController {
       RecordingStatus.notSupported.obs;
 
   Timer? _timer;
+  OverlayEntry? _overlayEntry;
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────
   @override
@@ -44,7 +46,23 @@ class CallController extends GetxController {
   @override
   void onClose() {
     _timer?.cancel();
+    _hideOverlay();
     super.onClose();
+  }
+
+  void _showOverlay() {
+    if (_overlayEntry != null) return;
+    _overlayEntry = OverlayEntry(
+      builder: (context) => const CallOverlayWidget(),
+    );
+    if (Get.overlayContext != null) {
+      Overlay.of(Get.overlayContext!).insert(_overlayEntry!);
+    }
+  }
+
+  void _hideOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   // ─── Filters ──────────────────────────────────────────────────────────────
@@ -120,7 +138,27 @@ class CallController extends GetxController {
     isCallActive.value = true;
     callDurationSeconds.value = 0;
     _callStartTime.value = DateTime.now();
+    _showOverlay();
     _startTimer();
+  }
+
+  Future<void> openWhatsApp(LeadModel lead) async {
+    // Keep only digits and the plus sign for robust parsing
+    final cleanPhone = lead.phone.replaceAll(RegExp(r'[^\d+]'), '');
+    final uri = Uri.parse('https://wa.me/$cleanPhone');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      Get.snackbar(
+        'Launch Failed',
+        'Could not open WhatsApp. Ensure it is installed on this device.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 
   void _startTimer() {
@@ -159,6 +197,7 @@ class CallController extends GetxController {
 
     // Reset state
     isCallActive.value = false;
+    _hideOverlay();
     callDurationSeconds.value = 0;
     activeLead.value = null;
     _callStartTime.value = null;
@@ -177,6 +216,7 @@ class CallController extends GetxController {
   void cancelCall() {
     _timer?.cancel();
     isCallActive.value = false;
+    _hideOverlay();
     callDurationSeconds.value = 0;
     activeLead.value = null;
     _callStartTime.value = null;

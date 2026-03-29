@@ -246,7 +246,8 @@ class _StatCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(size.width * 0.04),
+        padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.04, vertical: size.width * 0.03),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),

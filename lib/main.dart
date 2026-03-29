@@ -8,6 +8,7 @@ import 'app/modules/theme_controller.dart';
 import 'app/modules/auth/auth_controller.dart';
 import 'app/modules/leads/lead_controller.dart';
 import 'app/modules/activity/activity_controller.dart';
+import 'app/modules/calls/call_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,7 @@ void main() {
   Get.put(AuthController(), permanent: true);
   Get.put(LeadController(), permanent: true);
   Get.put(ActivityController(), permanent: true);
+  Get.put(CallController(), permanent: true);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

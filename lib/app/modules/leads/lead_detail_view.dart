@@ -107,22 +107,41 @@ class LeadDetailView extends StatelessWidget {
                     SizedBox(height: size.width * 0.03),
                     StatusChip(status: lead.status),
                     SizedBox(height: size.width * 0.04),
-                    // Call Now Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () => callCtrl.initiateCall(lead),
-                        icon: const Icon(Icons.call_rounded, size: 18),
-                        label: const Text('Call Now'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    // Call & WhatsApp Buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => callCtrl.initiateCall(lead),
+                            icon: const Icon(Icons.call_rounded, size: 18),
+                            label: const Text('Call Now'),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 12),
+                        Container(
+                          height: 48,
+                          width: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF25D366), // WhatsApp Green
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            onPressed: () => callCtrl.openWhatsApp(lead),
+                            icon: const Icon(
+                              Icons.wechat_rounded, // Temporary until custom icon
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            tooltip: 'Message on WhatsApp',
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
