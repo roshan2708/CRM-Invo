@@ -17,6 +17,9 @@ class _CallOverlayWidgetState extends State<CallOverlayWidget>
     with SingleTickerProviderStateMixin {
   final _notesCtrl = TextEditingController();
   CallTag _selectedTag = CallTag.none;
+  bool _isReceived = false;
+  CallOutcome _selectedOutcome = CallOutcome.none;
+
   late AnimationController _pulseCtrl;
   late Animation<double> _pulse;
 
@@ -63,8 +66,46 @@ class _CallOverlayWidgetState extends State<CallOverlayWidget>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('End Call', style: Theme.of(context).textTheme.headlineSmall),
+                Text('End Call Feedback', style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 16),
+                
+                // Was the call received
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Call Received?', style: Theme.of(context).textTheme.bodyMedium),
+                    Switch(
+                      value: _isReceived,
+                      onChanged: (val) => setSheetState(() => _isReceived = val),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Outcome selector
+                Text('Outcome:', style: Theme.of(context).textTheme.bodySmall),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<CallOutcome>(
+                      value: _selectedOutcome,
+                      isExpanded: true,
+                      onChanged: (val) {
+                        if (val != null) setSheetState(() => _selectedOutcome = val);
+                      },
+                      items: CallOutcome.values.map((o) {
+                        return DropdownMenuItem(value: o, child: Text(o.label));
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 // Tag selector
                 Text('Tag this call:', style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 10),
@@ -143,6 +184,8 @@ class _CallOverlayWidgetState extends State<CallOverlayWidget>
                           ctrl.endCall(
                             notes: _notesCtrl.text.trim(),
                             tag: _selectedTag,
+                            isReceived: _isReceived,
+                            outcome: _selectedOutcome,
                           );
                         },
                         child: const Text('Save & End'),

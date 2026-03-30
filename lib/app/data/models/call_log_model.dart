@@ -1,3 +1,30 @@
+/// Outcome of the call
+enum CallOutcome {
+  none,
+  connected,
+  noAnswer,
+  busy,
+  voicemail,
+  wrongNumber;
+
+  String get label {
+    switch (this) {
+      case CallOutcome.none:
+        return 'Selection Pending';
+      case CallOutcome.connected:
+        return 'Connected';
+      case CallOutcome.noAnswer:
+        return 'No Answer';
+      case CallOutcome.busy:
+        return 'Busy';
+      case CallOutcome.voicemail:
+        return 'Left Voicemail';
+      case CallOutcome.wrongNumber:
+        return 'Wrong Number';
+    }
+  }
+}
+
 /// Tag applied to a call after it ends.
 enum CallTag {
   none,
@@ -48,6 +75,8 @@ class CallLogModel {
   final DateTime? endTime;
   final int durationSeconds; // total duration
   final String? recordingPath; // null if recording not available
+  bool isReceived;
+  CallOutcome outcome;
   String notes;
   CallTag tag;
 
@@ -62,6 +91,8 @@ class CallLogModel {
     this.endTime,
     this.durationSeconds = 0,
     this.recordingPath,
+    this.isReceived = false,
+    this.outcome = CallOutcome.none,
     this.notes = '',
     this.tag = CallTag.none,
   });
@@ -76,6 +107,8 @@ class CallLogModel {
   }
 
   CallLogModel copyWith({
+    bool? isReceived,
+    CallOutcome? outcome,
     String? notes,
     CallTag? tag,
     String? recordingPath,
@@ -91,6 +124,8 @@ class CallLogModel {
       endTime: endTime,
       durationSeconds: durationSeconds,
       recordingPath: recordingPath ?? this.recordingPath,
+      isReceived: isReceived ?? this.isReceived,
+      outcome: outcome ?? this.outcome,
       notes: notes ?? this.notes,
       tag: tag ?? this.tag,
     );

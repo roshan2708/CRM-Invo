@@ -8,6 +8,7 @@ import '../../modules/calls/call_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/lead_card.dart';
+import '../attendance/widgets/attendance_card.dart';
 import '../../data/models/user_model.dart';
 import '../../data/models/lead_model.dart';
 
@@ -322,6 +323,8 @@ class _AdminDashboard extends StatelessWidget {
             SliverToBoxAdapter(
               child: _DashHeader(greeting: 'Admin Overview ', auth: auth),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            const SliverToBoxAdapter(child: AttendanceCard()),
             // Big stat grid
             SliverToBoxAdapter(
               child: Obx(
@@ -353,10 +356,22 @@ class _AdminDashboard extends StatelessWidget {
                         onTap: () => Get.toNamed(AppRoutes.activity),
                       ),
                       _StatCard(
-                        label: 'Revenue',
+                        label: 'Daily Revenue',
+                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.dailyRevenue),
+                        icon: Icons.payments_rounded,
+                        color: const Color(0xFF14B8A6), // Teal
+                      ),
+                      _StatCard(
+                        label: 'Monthly Revenue',
+                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.monthlyRevenue),
+                        icon: Icons.account_balance_wallet_rounded,
+                        color: const Color(0xFF0F766E), // Dark Teal
+                      ),
+                      _StatCard(
+                        label: 'Total Revenue',
                         value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.totalRevenue),
-                        icon: Icons.currency_rupee_rounded,
-                        color: const Color(0xFF0F766E),
+                        icon: Icons.public_rounded,
+                        color: const Color(0xFF1E3A8A), // Indigo
                       ),
                       _StatCard(
                         label: 'Converted',
@@ -508,6 +523,8 @@ class _ManagerDashboard extends StatelessWidget {
             SliverToBoxAdapter(
               child: _DashHeader(greeting: 'Team Overview ', auth: auth),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            const SliverToBoxAdapter(child: AttendanceCard()),
             // 4-card grid
             SliverToBoxAdapter(
               child: Obx(
@@ -737,6 +754,8 @@ class _SalesRepDashboard extends StatelessWidget {
             SliverToBoxAdapter(
               child: _DashHeader(greeting: 'My Pipeline ', auth: auth),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            const SliverToBoxAdapter(child: AttendanceCard()),
             // 2 personal stat cards
             SliverToBoxAdapter(
               child: Obx(() {

@@ -169,7 +169,12 @@ class CallController extends GetxController {
   }
 
   // ─── End Call ─────────────────────────────────────────────────────────────
-  void endCall({String notes = '', CallTag tag = CallTag.none}) {
+  void endCall({
+    String notes = '',
+    CallTag tag = CallTag.none,
+    bool isReceived = false,
+    CallOutcome outcome = CallOutcome.none,
+  }) {
     _timer?.cancel();
     final lead = activeLead.value;
     if (lead == null) return;
@@ -188,6 +193,8 @@ class CallController extends GetxController {
       startTime: _callStartTime.value ?? endTime,
       endTime: endTime,
       durationSeconds: duration,
+      isReceived: isReceived,
+      outcome: outcome,
       notes: notes,
       tag: tag,
     );

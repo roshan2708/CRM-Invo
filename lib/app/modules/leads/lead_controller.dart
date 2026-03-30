@@ -93,6 +93,22 @@ class LeadController extends GetxController {
   double get totalRevenue =>
       _allLeads.fold(0.0, (sum, l) => sum + (l.revenue ?? 0.0));
 
+  double get dailyRevenue {
+    final today = DateTime.now();
+    return _allLeads.where((l) {
+      final date = l.date;
+      return date.year == today.year && date.month == today.month && date.day == today.day;
+    }).fold(0.0, (sum, l) => sum + (l.revenue ?? 0.0));
+  }
+
+  double get monthlyRevenue {
+    final today = DateTime.now();
+    return _allLeads.where((l) {
+      final date = l.date;
+      return date.year == today.year && date.month == today.month;
+    }).fold(0.0, (sum, l) => sum + (l.revenue ?? 0.0));
+  }
+
   int get todayConnectedCalls =>
       _allLeads.fold(0, (sum, l) => sum + l.connectedCallsCount);
 

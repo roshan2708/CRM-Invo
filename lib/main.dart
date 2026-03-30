@@ -9,9 +9,12 @@ import 'app/modules/auth/auth_controller.dart';
 import 'app/modules/leads/lead_controller.dart';
 import 'app/modules/activity/activity_controller.dart';
 import 'app/modules/calls/call_controller.dart';
+import 'app/modules/attendance/attendance_controller.dart';
+import 'app/services/background_tracking_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeBackgroundService();
   // Register permanent controllers BEFORE runApp  avoids repeated
   // registration on hot-reload that causes GetX ownership warnings.
   Get.put(ThemeController(), permanent: true);
@@ -19,6 +22,7 @@ void main() {
   Get.put(LeadController(), permanent: true);
   Get.put(ActivityController(), permanent: true);
   Get.put(CallController(), permanent: true);
+  Get.put(AttendanceController(), permanent: true);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
