@@ -8,9 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // Hardcoded dummy office location for testing.
 // In a real app, this would be fetched from the backend.
-const double officeLat = 28.0;
-const double officeLng = 77.0;
-const double maxRadius = 15.0; // 15 meters boundary
+const double officeLat = 22.0506;
+const double officeLng = 88.0700;
+const double maxRadius =
+    10000.0; // Increased to 100m for easier testing at HIT Haldia
 
 Future<void> initializeBackgroundService() async {
   final service = FlutterBackgroundService();
@@ -27,7 +28,8 @@ Future<void> initializeBackgroundService() async {
 
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+        AndroidFlutterLocalNotificationsPlugin
+      >()
       ?.createNotificationChannel(channel);
 
   await service.configure(
@@ -78,10 +80,12 @@ void onStart(ServiceInstance service) async {
   // Poll GPS every 30 seconds
   Timer.periodic(const Duration(seconds: 30), (timer) async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     try {
       Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.bestForNavigation),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.bestForNavigation,
+        ),
       );
 
       double distance = Geolocator.distanceBetween(
@@ -94,7 +98,8 @@ void onStart(ServiceInstance service) async {
       if (service is AndroidServiceInstance) {
         service.setForegroundNotificationInfo(
           title: "Attendance Geofence Active",
-          content: "Dist: ${distance.toStringAsFixed(1)}m | Out: ${secondsOutOfOffice}s",
+          content:
+              "Dist: ${distance.toStringAsFixed(1)}m | Out: ${secondsOutOfOffice}s",
         );
       }
 
@@ -102,7 +107,8 @@ void onStart(ServiceInstance service) async {
         secondsOutOfOffice += 30; // Add the interval
       } else {
         if (!isBreakTriggered) {
-          secondsOutOfOffice = 0; // Return to safe zone resets timer (if not already broken)
+          secondsOutOfOffice =
+              0; // Return to safe zone resets timer (if not already broken)
         }
       }
 
@@ -120,7 +126,6 @@ void onStart(ServiceInstance service) async {
         timer.cancel();
         service.stopSelf();
       }
-
     } catch (e) {
       // Silent catch to prevent background crashes
     }
