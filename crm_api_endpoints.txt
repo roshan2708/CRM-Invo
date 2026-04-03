@@ -1,0 +1,98 @@
+=========================================
+CRM API ENDPOINTS: CALLS & ATTENDANCE
+=========================================
+
+-----------------------------------------
+1. CALL TRACKING (Existing Endpoints)
+-----------------------------------------
+
+A. RECORD CALL OUTCOME
+POST /api/leads/{id}/record-outcome
+Headers:
+  Content-Type: application/json
+  Authorization: Bearer <token>
+Body:
+{
+  "status": "FOLLOW_UP",
+  "note": "Client asked to call back next week",
+  "followUpDate": "2026-04-05T10:00:00"
+}
+
+B. UPLOAD CALL RECORDING (Audio)
+POST /api/leads/{id}/upload-recording
+Headers:
+  Authorization: Bearer <token>
+  Content-Type: multipart/form-data
+Body (form-data):
+  file: <audio_file.m4a/mp3>
+  duration: 120 (seconds)
+  timestamp: "2026-03-30T10:30:00Z"
+
+C. UPDATE LEAD STATUS/NOTES
+PUT /api/leads/{id}/status?status=INTERESTED&note=Spoke+to+manager
+Headers:
+  Authorization: Bearer <token>
+
+D. GET LEAD CALL STATS
+GET /api/leads/stats
+Headers:
+  Authorization: Bearer <token>
+
+D. GET LEAD DETAILS (History)
+GET /api/leads/{id}
+Headers:
+  Authorization: Bearer <token>
+
+-----------------------------------------
+2. ATTENDANCE (Recommended Endpoints)
+-----------------------------------------
+Note: These are not currently in your Java list and should be added to a new AttendanceController.
+
+A. CLOCK IN
+POST /api/attendance/clock-in
+Headers:
+  Content-Type: application/json
+  Authorization: Bearer <token>
+Body:
+{
+  "latitude": 12.9716,
+  "longitude": 77.5946,
+  "timestamp": "2026-03-30T09:00:00Z"
+}
+
+B. CLOCK OUT
+PUT /api/attendance/clock-out
+Headers:
+  Content-Type: application/json
+  Authorization: Bearer <token>
+Body:
+{
+  "latitude": 12.9716,
+  "longitude": 77.5946,
+  "timestamp": "2026-03-30T18:00:00Z"
+}
+
+C. GET CURRENT ATTENDANCE STATUS
+GET /api/attendance/status
+Headers:
+  Authorization: Bearer <token>
+Description: Checks if the user is currently Clocked In, Clocked Out, or on Break.
+
+D. GET DAILY/MONTHLY LOGS
+GET /api/attendance/my-logs
+Headers:
+  Authorization: Bearer <token>
+
+-----------------------------------------
+AUTHENTICATION (Required for Above)
+-----------------------------------------
+
+LOGIN
+POST /api/auth/login
+Body:
+{
+  "email": "user@test.com",
+  "password": "password"
+}
+Response: { "token": "..." }
+Use in subsequent calls as: Authorization: Bearer <token>

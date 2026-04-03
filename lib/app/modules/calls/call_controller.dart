@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:call_log/call_log.dart' hide CallType;
 import '../../data/dummy_data.dart';
 import '../../data/models/call_log_model.dart';
 import '../../data/models/lead_model.dart';
@@ -10,7 +11,7 @@ import 'call_overlay_widget.dart';
 
 enum RecordingStatus { supported, notSupported, denied }
 
-class CallController extends GetxController {
+class CallController extends GetxController with WidgetsBindingObserver {
   // ─── State ────────────────────────────────────────────────────────────────
   final RxList<CallLogModel> _allLogs = <CallLogModel>[].obs;
   final RxList<CallLogModel> filteredLogs = <CallLogModel>[].obs;
@@ -36,6 +37,7 @@ class CallController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _allLogs.assignAll(DummyData.callLogs);
     filteredLogs.assignAll(_allLogs);
     ever(searchQuery, (_) => _applyFilters());
@@ -45,9 +47,53 @@ class CallController extends GetxController {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _hideOverlay();
     super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && isCallActive.value) {
+      _checkRealCallLogOnResume();
+    }
+  }
+
+  Future<void> _checkRealCallLogOnResume() async {
+    final lead = activeLead.value;
+    final startTime = _callStartTime.value;
+    if (lead == null || startTime == null) return;
+
+    // Allow the native OS a moment to write to the call log before querying
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (GetPlatform.isAndroid) {
+      try {
+        final Iterable<CallLogEntry> entries = await CallLog.get();
+        final targetPhone = lead.phone.replaceAll(RegExp(r'[^\d+]'), '');
+
+        for (final entry in entries) {
+          final entryPhone = entry.number?.replaceAll(RegExp(r'[^\d+]'), '') ?? '';
+          if (entryPhone.isNotEmpty &&
+              (entryPhone.contains(targetPhone) || targetPhone.contains(entryPhone))) {
+            
+            if (entry.timestamp != null) {
+              final entryTime = DateTime.fromMillisecondsSinceEpoch(entry.timestamp!);
+              // Match logs that happened very recently
+              if (entryTime.isAfter(startTime.subtract(const Duration(minutes: 1)))) {
+                if (entry.duration != null) {
+                  callDurationSeconds.value = entry.duration!;
+                }
+                break;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('Error reading call log: $e');
+      }
+    }
   }
 
   void _showOverlay() {
