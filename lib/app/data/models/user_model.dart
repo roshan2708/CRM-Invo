@@ -49,4 +49,33 @@ class UserModel {
     required this.phone,
     required this.department,
   });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      password: json['password'] ?? '',
+      userRole: UserRole.values.firstWhere(
+        (e) => e.name == (json['role'] ?? 'salesRep'),
+        orElse: () => UserRole.salesRep,
+      ),
+      avatarIndex: json['avatarIndex'] ?? 0,
+      phone: json['phone'] ?? '',
+      department: json['department'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'password': password,
+      'role': userRole.name,
+      'avatarIndex': avatarIndex,
+      'phone': phone,
+      'department': department,
+    };
+  }
 }

@@ -95,4 +95,38 @@ class LeadModel {
       connectedCallsCount: connectedCallsCount ?? this.connectedCallsCount,
     );
   }
+
+  factory LeadModel.fromJson(Map<String, dynamic> json) {
+    return LeadModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      phone: json['phone'] ?? '',
+      email: json['email'] ?? '',
+      status: LeadStatus.fromString(json['status'] ?? 'newLead'),
+      notes: json['notes'] ?? '',
+      date: json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
+      avatarIndex: json['avatarIndex'] ?? 0,
+      company: json['company'],
+      source: json['source'],
+      revenue: (json['revenue'] ?? 0).toDouble(),
+      connectedCallsCount: json['connectedCallsCount'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'status': status.label.toUpperCase().replaceAll(' ', '_'),
+      'notes': notes,
+      'date': date.toIso8601String(),
+      'avatarIndex': avatarIndex,
+      'company': company,
+      'source': source,
+      'revenue': revenue,
+      'connectedCallsCount': connectedCallsCount,
+    };
+  }
 }

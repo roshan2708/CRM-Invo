@@ -130,4 +130,53 @@ class CallLogModel {
       tag: tag ?? this.tag,
     );
   }
+
+  factory CallLogModel.fromJson(Map<String, dynamic> json) {
+    return CallLogModel(
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      clientId: json['clientId'] ?? '',
+      clientName: json['clientName'] ?? '',
+      phone: json['phone'] ?? '',
+      callType: CallType.values.firstWhere(
+        (e) => e.name == (json['callType'] ?? 'outgoing'),
+        orElse: () => CallType.outgoing,
+      ),
+      startTime: json['startTime'] != null
+          ? DateTime.parse(json['startTime'])
+          : DateTime.now(),
+      endTime: json['endTime'] != null ? DateTime.parse(json['endTime']) : null,
+      durationSeconds: json['durationSeconds'] ?? 0,
+      recordingPath: json['recordingPath'],
+      isReceived: json['isReceived'] ?? false,
+      outcome: CallOutcome.values.firstWhere(
+        (e) => e.name == (json['outcome'] ?? 'none'),
+        orElse: () => CallOutcome.none,
+      ),
+      notes: json['notes'] ?? '',
+      tag: CallTag.values.firstWhere(
+        (e) => e.name == (json['tag'] ?? 'none'),
+        orElse: () => CallTag.none,
+      ),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'clientId': clientId,
+      'clientName': clientName,
+      'phone': phone,
+      'callType': callType.name,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime?.toIso8601String(),
+      'durationSeconds': durationSeconds,
+      'recordingPath': recordingPath,
+      'isReceived': isReceived,
+      'outcome': outcome.name,
+      'notes': notes,
+      'tag': tag.name,
+    };
+  }
 }
