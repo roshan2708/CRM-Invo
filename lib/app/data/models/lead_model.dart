@@ -50,6 +50,8 @@ class LeadModel {
   String? source;
   final double? revenue;
   final int connectedCallsCount;
+  /// The scheduled follow-up / meeting date — drives the calendar view.
+  final DateTime? followUpDate;
 
   LeadModel({
     required this.id,
@@ -64,6 +66,7 @@ class LeadModel {
     this.source,
     this.revenue = 0.0,
     this.connectedCallsCount = 0,
+    this.followUpDate,
   });
 
   LeadModel copyWith({
@@ -79,6 +82,7 @@ class LeadModel {
     String? source,
     double? revenue,
     int? connectedCallsCount,
+    DateTime? followUpDate,
   }) {
     return LeadModel(
       id: id ?? this.id,
@@ -93,6 +97,7 @@ class LeadModel {
       source: source ?? this.source,
       revenue: revenue ?? this.revenue,
       connectedCallsCount: connectedCallsCount ?? this.connectedCallsCount,
+      followUpDate: followUpDate ?? this.followUpDate,
     );
   }
 
@@ -110,6 +115,9 @@ class LeadModel {
       source: json['source'],
       revenue: (json['revenue'] ?? 0).toDouble(),
       connectedCallsCount: json['connectedCallsCount'] ?? 0,
+      followUpDate: json['followUpDate'] != null
+          ? DateTime.parse(json['followUpDate'])
+          : null,
     );
   }
 
@@ -127,6 +135,7 @@ class LeadModel {
       'source': source,
       'revenue': revenue,
       'connectedCallsCount': connectedCallsCount,
+      'followUpDate': followUpDate?.toIso8601String(),
     };
   }
 }
