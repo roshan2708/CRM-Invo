@@ -113,7 +113,11 @@ class _DashHeader extends StatelessWidget {
               final color =
                   AppColors.avatarColors[idx % AppColors.avatarColors.length];
               final initials = name.isNotEmpty
-                  ? name.split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join()
+                  ? name
+                        .split(' ')
+                        .take(2)
+                        .map((e) => e.isNotEmpty ? e[0] : '')
+                        .join()
                   : '?';
               return Container(
                 width: size.width * 0.1,
@@ -160,13 +164,20 @@ class _StatCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: size.width * 0.04, vertical: size.width * 0.03),
+          horizontal: size.width * 0.04,
+          vertical: size.width * 0.03,
+        ),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.2),
+              color: const Color.fromARGB(
+                255,
+                38,
+                128,
+                173,
+              ).withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -179,7 +190,12 @@ class _StatCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.white.withValues(alpha: 0.2),
+                color: const Color.fromARGB(
+                  255,
+                  176,
+                  56,
+                  56,
+                ).withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -257,45 +273,54 @@ class _AdminDashboard extends StatelessWidget {
                         label: 'Total Leads',
                         value: leads.totalLeads.toString(),
                         icon: Icons.people_alt_rounded,
-                        color: const Color(0xFF4F46E5),
+                        color: AppColors.primary,
                         onTap: () => Get.toNamed(AppRoutes.leads),
                       ),
                       _StatCard(
                         label: 'Today Follow-ups',
                         value: activities.todayFollowupsCount.toString(),
                         icon: Icons.notifications_active_rounded,
-                        color: const Color(0xFFEC4899),
+                        color: AppColors.statusNew,
                         onTap: () => Get.toNamed(AppRoutes.activity),
                       ),
                       _StatCard(
                         label: 'Daily Revenue',
-                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.dailyRevenue),
+                        value: NumberFormat.compactCurrency(
+                          symbol: '₹',
+                          decimalDigits: 1,
+                        ).format(leads.dailyRevenue),
                         icon: Icons.payments_rounded,
-                        color: const Color(0xFF14B8A6), // Teal
+                        color: AppColors.accent,
                       ),
                       _StatCard(
                         label: 'Monthly Revenue',
-                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.monthlyRevenue),
+                        value: NumberFormat.compactCurrency(
+                          symbol: '₹',
+                          decimalDigits: 1,
+                        ).format(leads.monthlyRevenue),
                         icon: Icons.account_balance_wallet_rounded,
-                        color: const Color(0xFF0F766E), // Dark Teal
+                        color: const Color.fromARGB(255, 204, 103, 103),
                       ),
                       _StatCard(
                         label: 'Total Revenue',
-                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.totalRevenue),
+                        value: NumberFormat.compactCurrency(
+                          symbol: '₹',
+                          decimalDigits: 1,
+                        ).format(leads.totalRevenue),
                         icon: Icons.public_rounded,
-                        color: const Color(0xFF1E3A8A), // Indigo
+                        color: AppColors.primaryDark,
                       ),
                       _StatCard(
                         label: 'Converted',
                         value: leads.convertedLeads.toString(),
                         icon: Icons.check_circle_rounded,
-                        color: const Color(0xFF10B981),
+                        color: AppColors.statusInterested,
                       ),
                       _StatCard(
                         label: 'Connected Calls',
                         value: callCtrl.connectedCallsCount.toString(),
                         icon: Icons.call_made_rounded,
-                        color: const Color(0xFF06B6D4),
+                        color: AppColors.statusConverted,
                         onTap: () => Get.toNamed(AppRoutes.callHistory),
                       ),
                     ],
@@ -314,7 +339,7 @@ class _AdminDashboard extends StatelessWidget {
                 ),
                 padding: EdgeInsets.all(size.width * 0.04),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E1B4B),
+                  color: AppColors.primaryDark,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -457,27 +482,27 @@ class _ManagerDashboard extends StatelessWidget {
                         label: 'Total Leads',
                         value: leads.totalLeads.toString(),
                         icon: Icons.people_alt_rounded,
-                        color: const Color(0xFF4F46E5),
+                        color: AppColors.primary,
                         onTap: () => Get.toNamed(AppRoutes.leads),
                       ),
                       _StatCard(
                         label: 'Follow-ups',
                         value: activities.todayFollowupsCount.toString(),
                         icon: Icons.notifications_active_rounded,
-                        color: const Color(0xFFEC4899),
+                        color: AppColors.statusNew,
                         onTap: () => Get.toNamed(AppRoutes.activity),
                       ),
                       _StatCard(
                         label: 'Converted',
                         value: leads.convertedLeads.toString(),
                         icon: Icons.check_circle_rounded,
-                        color: const Color(0xFF10B981),
+                        color: AppColors.statusInterested,
                       ),
                       _StatCard(
                         label: 'Connected Calls',
                         value: callCtrl.connectedCallsCount.toString(),
                         icon: Icons.call_made_rounded,
-                        color: const Color(0xFF06B6D4),
+                        color: AppColors.statusConverted,
                         onTap: () => Get.toNamed(AppRoutes.callHistory),
                       ),
                     ],
@@ -561,7 +586,7 @@ class _ManagerDashboard extends StatelessWidget {
                         icon: Icons.add_circle_outline_rounded,
                         label: 'Add Lead',
                         onTap: () => Get.toNamed(AppRoutes.addLead),
-                        color: const Color(0xFF4F46E5),
+                        color: AppColors.primary,
                       ),
                     ),
                     SizedBox(width: size.width * 0.03),
@@ -570,7 +595,7 @@ class _ManagerDashboard extends StatelessWidget {
                         icon: Icons.event_note_rounded,
                         label: 'Activities',
                         onTap: () => Get.toNamed(AppRoutes.activity),
-                        color: const Color(0xFF06B6D4),
+                        color: AppColors.statusConverted,
                       ),
                     ),
                     SizedBox(width: size.width * 0.03),
@@ -579,7 +604,7 @@ class _ManagerDashboard extends StatelessWidget {
                         icon: Icons.people_outline_rounded,
                         label: 'All Leads',
                         onTap: () => Get.toNamed(AppRoutes.leads),
-                        color: const Color(0xFF10B981),
+                        color: AppColors.statusInterested,
                       ),
                     ),
                   ],
@@ -693,27 +718,27 @@ class _AssociateDashboard extends StatelessWidget {
                         label: 'My Leads',
                         value: myLeads.length.toString(),
                         icon: Icons.person_pin_rounded,
-                        color: const Color(0xFF4F46E5),
+                        color: AppColors.primary,
                         onTap: () => Get.toNamed(AppRoutes.leads),
                       ),
                       _StatCard(
                         label: 'Today Follow-ups',
                         value: myPending.toString(),
                         icon: Icons.alarm_rounded,
-                        color: const Color(0xFFF59E0B),
+                        color: AppColors.warning,
                         onTap: () => Get.toNamed(AppRoutes.activity),
                       ),
                       _StatCard(
                         label: 'Converted',
                         value: myConverted.toString(),
                         icon: Icons.verified_rounded,
-                        color: const Color(0xFF10B981),
+                        color: AppColors.statusInterested,
                       ),
                       _StatCard(
                         label: 'Connected Calls',
                         value: callCtrl.connectedCallsCount.toString(),
                         icon: Icons.call_made_rounded,
-                        color: const Color(0xFF06B6D4),
+                        color: AppColors.statusConverted,
                         onTap: () => Get.toNamed(AppRoutes.callHistory),
                       ),
                     ],
@@ -737,7 +762,7 @@ class _AssociateDashboard extends StatelessWidget {
                         icon: Icons.add_chart_rounded,
                         label: 'Add Lead',
                         onTap: () => Get.toNamed(AppRoutes.addLead),
-                        color: const Color(0xFF4F46E5),
+                        color: AppColors.primary,
                       ),
                     ),
                     SizedBox(width: size.width * 0.03),
@@ -746,7 +771,7 @@ class _AssociateDashboard extends StatelessWidget {
                         icon: Icons.history_rounded,
                         label: 'Activity',
                         onTap: () => Get.toNamed(AppRoutes.activity),
-                        color: const Color(0xFF06B6D4),
+                        color: AppColors.statusConverted,
                       ),
                     ),
                   ],

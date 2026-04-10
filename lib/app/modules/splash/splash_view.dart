@@ -85,7 +85,7 @@ class _SplashViewState extends State<SplashView>
                   ),
                   SizedBox(height: size.width * 0.06),
                   Text(
-                    'CRM Pro',
+                    'CRM',
                     style: TextStyle(
                       fontSize: size.width * 0.1,
                       fontWeight: FontWeight.w800,
