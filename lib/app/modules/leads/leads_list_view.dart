@@ -38,7 +38,7 @@ class _CalendarLeadsView extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: NestedScrollView(
-        headerSliverBuilder: (_, __) => [
+        headerSliverBuilder: (_, _) => [
           _LeadsSliverAppBar(
             isCalendar: true,
             ctrl: ctrl,
@@ -253,7 +253,7 @@ class _CalendarLeadsView extends StatelessWidget {
           );
         }),
       ),
-      bottomNavigationBar: const _LeadsBottomNav(),
+      bottomNavigationBar: null,
       floatingActionButton: _AddLeadFAB(),
     );
   }
@@ -299,7 +299,7 @@ class _ListLeadsView extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: NestedScrollView(
-        headerSliverBuilder: (_, __) => [
+        headerSliverBuilder: (_, _) => [
           _LeadsSliverAppBar(
             isCalendar: false,
             ctrl: ctrl,
@@ -345,7 +345,7 @@ class _ListLeadsView extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
                   scrollDirection: Axis.horizontal,
                   itemCount: statuses.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
                   itemBuilder: (ctx, i) {
                     final s = statuses[i];
                     final isSelected = ctrl.selectedStatus.value == s;
@@ -510,7 +510,7 @@ class _ListLeadsView extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const _LeadsBottomNav(),
+      bottomNavigationBar: null,
       floatingActionButton: _AddLeadFAB(),
     );
   }
@@ -1014,108 +1014,6 @@ class _NoLeadsForDay extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  SHARED BOTTOM NAV
-// ══════════════════════════════════════════════════════════════════════════════
-class _LeadsBottomNav extends StatelessWidget {
-  const _LeadsBottomNav();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.appBarTheme.backgroundColor,
-        border: Border(top: BorderSide(color: theme.dividerColor)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                icon: Icons.dashboard_rounded,
-                label: 'Dashboard',
-                route: AppRoutes.dashboard,
-              ),
-              _NavItem(
-                icon: Icons.people_rounded,
-                label: 'Leads',
-                route: AppRoutes.leads,
-                active: true,
-              ),
-              _NavItem(
-                icon: Icons.event_note_rounded,
-                label: 'Activity',
-                route: AppRoutes.activity,
-              ),
-              _NavItem(
-                icon: Icons.person_outline_rounded,
-                label: 'Profile',
-                route: AppRoutes.profile,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String route;
-  final bool active;
-
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-    this.active = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = active
-        ? theme.colorScheme.primary
-        : theme.textTheme.bodySmall?.color ?? Colors.grey;
-    return GestureDetector(
-      onTap: () {
-        if (!active) Get.offNamed(route);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        decoration: BoxDecoration(
-          color: active
-              ? theme.colorScheme.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: color,
-                fontWeight:
-                    active ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

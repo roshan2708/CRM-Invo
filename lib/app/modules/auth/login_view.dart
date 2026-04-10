@@ -5,6 +5,7 @@ import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../data/models/user_model.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
@@ -31,11 +32,19 @@ class LoginView extends StatelessWidget {
     if (!_formKey.currentState!.validate()) return;
     final success = await _auth.login(_emailCtrl.text.trim(), _passCtrl.text);
     if (success) {
-      Get.offNamed(AppRoutes.dashboard);
+      if (_auth.isAdmin) {
+        Get.offNamed(AppRoutes.adminDashboard);
+      } else if (_auth.isManager) {
+        Get.offNamed(AppRoutes.managerDashboard);
+      } else if (_auth.isTeamLeader) {
+        Get.offNamed(AppRoutes.tlDashboard);
+      } else {
+        Get.offNamed(AppRoutes.associateDashboard);
+      }
     } else {
       Get.snackbar(
         'Login Failed',
-        'Invalid credentials. Use one of the roles below.',
+        'Invalid credentials. Use demo access below.',
         snackPosition: SnackPosition.TOP,
         backgroundColor: AppColors.error,
         colorText: AppColors.white,
@@ -43,6 +52,21 @@ class LoginView extends StatelessWidget {
         borderRadius: 12,
         duration: const Duration(seconds: 4),
       );
+    }
+  }
+
+  Future<void> _loginDemo(UserRole role) async {
+    final success = await _auth.loginDemo(role);
+    if (success) {
+      if (_auth.isAdmin) {
+        Get.offNamed(AppRoutes.adminDashboard);
+      } else if (_auth.isManager) {
+        Get.offNamed(AppRoutes.managerDashboard);
+      } else if (_auth.isTeamLeader) {
+        Get.offNamed(AppRoutes.tlDashboard);
+      } else {
+        Get.offNamed(AppRoutes.associateDashboard);
+      }
     }
   }
 
@@ -85,67 +109,7 @@ class LoginView extends StatelessWidget {
                       color: theme.textTheme.bodySmall?.color,
                     ),
                   ),
-                  SizedBox(height: size.height * 0.035),
-                  // Role credentials table
-                  Container(
-                    padding: EdgeInsets.all(size.width * 0.04),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: theme.dividerColor),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.vpn_key_rounded,
-                              size: 16,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Demo Credentials',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: size.width * 0.03),
-                        _CredRow(
-                          role: 'Admin',
-                          email: 'admin@crm.com',
-                          pass: 'admin123',
-                          onTap: () {
-                            _emailCtrl.text = 'admin@crm.com';
-                            _passCtrl.text = 'admin123';
-                          },
-                        ),
-                        _CredRow(
-                          role: 'Manager',
-                          email: 'manager@crm.com',
-                          pass: 'manager123',
-                          onTap: () {
-                            _emailCtrl.text = 'manager@crm.com';
-                            _passCtrl.text = 'manager123';
-                          },
-                        ),
-                        _CredRow(
-                          role: 'Sales Rep',
-                          email: 'rep@crm.com',
-                          pass: 'rep123',
-                          borderBottom: false,
-                          onTap: () {
-                            _emailCtrl.text = 'rep@crm.com';
-                            _passCtrl.text = 'rep123';
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: size.height * 0.03),
+
                   // Fields
                   CustomTextField(
                     label: 'Email Address',
@@ -187,7 +151,74 @@ class LoginView extends StatelessWidget {
                       isLoading: _auth.isLoading.value,
                     ),
                   ),
-                  SizedBox(height: size.height * 0.025),
+                  SizedBox(height: size.height * 0.03),
+                  
+                  // Divider
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: theme.dividerColor)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'DEMO ACCESS',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            letterSpacing: 1.2,
+                            fontWeight: FontWeight.w600,
+                            color: theme.textTheme.bodySmall?.color,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: theme.dividerColor)),
+                    ],
+                  ),
+                  SizedBox(height: size.height * 0.02),
+                  
+                  // Demo Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _DemoButton(
+                          label: 'Admin',
+                          icon: Icons.security_rounded,
+                          color: const Color(0xFF6366F1),
+                          onTap: () => _loginDemo(UserRole.admin),
+                        ),
+                      ),
+                      SizedBox(width: size.width * 0.02),
+                      Expanded(
+                        child: _DemoButton(
+                          label: 'Manager',
+                          icon: Icons.manage_accounts_rounded,
+                          color: const Color(0xFF22D3EE),
+                          onTap: () => _loginDemo(UserRole.manager),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: size.width * 0.02),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _DemoButton(
+                          label: 'Team Lead',
+                          icon: Icons.groups_rounded,
+                          color: const Color(0xFF10B981),
+                          onTap: () => _loginDemo(UserRole.teamLeader),
+                        ),
+                      ),
+                      SizedBox(width: size.width * 0.02),
+                      Expanded(
+                        child: _DemoButton(
+                          label: 'Associate',
+                          icon: Icons.person_rounded,
+                          color: const Color(0xFFF59E0B),
+                          onTap: () => _loginDemo(UserRole.associate),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: size.height * 0.04),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -220,63 +251,40 @@ class LoginView extends StatelessWidget {
   }
 }
 
-class _CredRow extends StatelessWidget {
-  final String role;
-  final String email;
-  final String pass;
+class _DemoButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
   final VoidCallback onTap;
-  final bool borderBottom;
 
-  const _CredRow({
-    required this.role,
-    required this.email,
-    required this.pass,
+  const _DemoButton({
+    required this.label,
+    required this.icon,
+    required this.color,
     required this.onTap,
-    this.borderBottom = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: size.width * 0.025),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          border: borderBottom
-              ? Border(bottom: BorderSide(color: theme.dividerColor))
-              : null,
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: theme.dividerColor),
         ),
-        child: Row(
+        child: Column(
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(role, style: theme.textTheme.labelLarge),
-                  const SizedBox(height: 2),
-                  Text(
-                    '$email    $pass',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Use',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w700,
-                ),
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

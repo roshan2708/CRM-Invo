@@ -447,6 +447,7 @@ class _SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
+    final trailingWidget = trailing;
     return Container(
       margin: EdgeInsets.fromLTRB(
         size.width * 0.04,
@@ -468,7 +469,7 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(title, style: theme.textTheme.headlineSmall),
               ),
-              if (trailing != null) trailing!,
+              if (trailingWidget != null) trailingWidget,
             ],
           ),
           const SizedBox(height: 12),

@@ -213,8 +213,9 @@ class _AddLeadViewState extends State<AddLeadView> {
                   if (v == null || v.trim().isEmpty) return 'Email is required';
                   if (!RegExp(
                     r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,4}$',
-                  ).hasMatch(v.trim()))
+                  ).hasMatch(v.trim())) {
                     return 'Invalid email';
+                  }
                   return null;
                 },
               ),

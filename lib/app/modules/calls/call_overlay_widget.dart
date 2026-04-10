@@ -250,7 +250,7 @@ class _CallOverlayWidgetState extends State<CallOverlayWidget>
                   children: [
                     AnimatedBuilder(
                       animation: _pulse,
-                      builder: (_, __) => Container(
+                      builder: (_, _) => Container(
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(

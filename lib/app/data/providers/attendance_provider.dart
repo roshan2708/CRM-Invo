@@ -1,13 +1,8 @@
 import 'package:get/get.dart';
+import 'base_provider.dart';
 import '../api_constants.dart';
 
-class AttendanceProvider extends GetConnect {
-  @override
-  void onInit() {
-    httpClient.baseUrl = ApiConstants.baseUrl;
-    super.onInit();
-  }
-
+class AttendanceProvider extends BaseProvider {
   // Clock in
   Future<Response> clockIn(double lat, double lng, String timestamp) => post(
         ApiConstants.clockIn,

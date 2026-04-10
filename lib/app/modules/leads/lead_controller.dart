@@ -1,6 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../../data/dummy_data.dart';
 import '../../data/models/lead_model.dart';
+import '../auth/auth_controller.dart';
+import '../../data/providers/admin_provider.dart';
+import '../../data/providers/manager_provider.dart';
+import '../../data/providers/tl_provider.dart';
+import '../../data/providers/associate_provider.dart';
 
 class LeadController extends GetxController {
   final RxList<LeadModel> _allLeads = <LeadModel>[].obs;
@@ -22,6 +28,38 @@ class LeadController extends GetxController {
     filteredLeads.assignAll(_allLeads);
     ever(searchQuery, (_) => _applyFilters());
     ever(selectedStatus, (_) => _applyFilters());
+    fetchLeadsFromBackend();
+  }
+
+  Future<void> fetchLeadsFromBackend() async {
+    final auth = Get.find<AuthController>();
+    Response? response;
+    
+    try {
+      isLoading.value = true;
+      if (auth.isAdmin) {
+        response = await Get.find<AdminProvider>().fetchLeads();
+      } else if (auth.isManager) {
+        response = await Get.find<ManagerProvider>().fetchLeads();
+      } else if (auth.isTeamLeader) {
+        response = await Get.find<TlProvider>().fetchMyLeads();
+      } else {
+        response = await Get.find<AssociateProvider>().fetchMyLeads();
+      }
+
+      if (response.isOk) {
+        final List<dynamic> data = response.body is List ? response.body : (response.body['data'] ?? []);
+        if (data.isNotEmpty) {
+           final fetchedLeads = data.map((e) => LeadModel.fromJson(e)).toList();
+           _allLeads.assignAll(fetchedLeads);
+           _applyFilters();
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching leads from backend: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void _applyFilters() {

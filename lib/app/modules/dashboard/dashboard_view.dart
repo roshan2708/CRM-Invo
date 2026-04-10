@@ -22,105 +22,14 @@ class DashboardView extends StatelessWidget {
       switch (auth.role) {
         case UserRole.admin:
           return const _AdminDashboard();
-        case UserRole.salesManager:
+        case UserRole.manager:
           return const _ManagerDashboard();
-        case UserRole.salesRep:
-          return const _SalesRepDashboard();
+        case UserRole.teamLeader:
+        case UserRole.associateTeamLead:
+        case UserRole.associate:
+          return const _AssociateDashboard();
       }
     });
-  }
-}
-
-//   SHARED BOTTOM NAV
-class _BottomNav extends StatelessWidget {
-  final String active;
-  const _BottomNav({required this.active});
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.appBarTheme.backgroundColor,
-        border: Border(top: BorderSide(color: theme.dividerColor)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                icon: Icons.dashboard_rounded,
-                label: 'Dashboard',
-                route: AppRoutes.dashboard,
-                active: active == 'dashboard',
-              ),
-              _NavItem(
-                icon: Icons.people_outline_rounded,
-                label: 'Leads',
-                route: AppRoutes.leads,
-                active: active == 'leads',
-              ),
-              _NavItem(
-                icon: Icons.call_rounded,
-                label: 'Calls',
-                route: AppRoutes.callHistory,
-                active: active == 'calls',
-              ),
-              _NavItem(
-                icon: Icons.event_note_rounded,
-                label: 'Activity',
-                route: AppRoutes.activity,
-                active: active == 'activity',
-              ),
-              _NavItem(
-                icon: Icons.person_outline_rounded,
-                label: 'Profile',
-                route: AppRoutes.profile,
-                active: active == 'profile',
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String route;
-  final bool active;
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-    this.active = false,
-  });
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = active
-        ? theme.colorScheme.primary
-        : theme.textTheme.bodySmall?.color ?? Colors.grey;
-    return GestureDetector(
-      onTap: () {
-        if (!active) Get.offNamed(route);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(color: color),
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -198,11 +107,14 @@ class _DashHeader extends StatelessWidget {
           GestureDetector(
             onTap: () => Get.toNamed(AppRoutes.profile),
             child: Obx(() {
-              final name = auth.currentUser.value.name;
-              final idx = auth.currentUser.value.avatarIndex;
+              final user = auth.currentUser.value;
+              final name = user.name;
+              final idx = user.avatarIndex;
               final color =
                   AppColors.avatarColors[idx % AppColors.avatarColors.length];
-              final initials = name.split(' ').take(2).map((e) => e[0]).join();
+              final initials = name.isNotEmpty
+                  ? name.split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join()
+                  : '?';
               return Container(
                 width: size.width * 0.1,
                 height: size.width * 0.1,
@@ -212,7 +124,7 @@ class _DashHeader extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  initials,
+                  initials.toUpperCase(),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: AppColors.white,
                     fontWeight: FontWeight.w700,
@@ -495,7 +407,7 @@ class _AdminDashboard extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const _BottomNav(active: 'dashboard'),
+      bottomNavigationBar: null,
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(AppRoutes.addLead),
         tooltip: 'Add Lead',
@@ -725,7 +637,7 @@ class _ManagerDashboard extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const _BottomNav(active: 'dashboard'),
+      bottomNavigationBar: null,
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(AppRoutes.addLead),
         tooltip: 'Add Lead',
@@ -735,9 +647,9 @@ class _ManagerDashboard extends StatelessWidget {
   }
 }
 
-//   SALES REP DASHBOARD
-class _SalesRepDashboard extends StatelessWidget {
-  const _SalesRepDashboard();
+//   ASSOCIATE DASHBOARD
+class _AssociateDashboard extends StatelessWidget {
+  const _AssociateDashboard();
   @override
   Widget build(BuildContext context) {
     final leads = Get.find<LeadController>();
@@ -798,80 +710,18 @@ class _SalesRepDashboard extends StatelessWidget {
                         color: const Color(0xFF10B981),
                       ),
                       _StatCard(
-                        label: 'Connected',
+                        label: 'Connected Calls',
                         value: callCtrl.connectedCallsCount.toString(),
                         icon: Icons.call_made_rounded,
                         color: const Color(0xFF06B6D4),
                         onTap: () => Get.toNamed(AppRoutes.callHistory),
-                      ),
-                      _StatCard(
-                        label: 'Revenue',
-                        value: NumberFormat.compactCurrency(symbol: '₹', decimalDigits: 1).format(leads.totalRevenue),
-                        icon: Icons.currency_rupee_rounded,
-                        color: const Color(0xFF0F766E),
                       ),
                     ],
                   ),
                 );
               }),
             ),
-            // Today's target card
-            SliverToBoxAdapter(
-              child: Container(
-                margin: EdgeInsets.fromLTRB(
-                  size.width * 0.04,
-                  0,
-                  size.width * 0.04,
-                  size.width * 0.03,
-                ),
-                padding: EdgeInsets.all(size.width * 0.04),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0F766E),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.emoji_events_rounded,
-                        color: AppColors.white,
-                        size: 26,
-                      ),
-                    ),
-                    SizedBox(width: size.width * 0.04),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Today's Goal",
-                            style: TextStyle(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: size.width * 0.04,
-                            ),
-                          ),
-                          SizedBox(height: size.width * 0.01),
-                          Text(
-                            'Make 5 calls & follow up on 3 leads',
-                            style: TextStyle(
-                              color: AppColors.white.withValues(alpha: 0.85),
-                              fontSize: size.width * 0.032,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Quick actions
+            // Quick Action row
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
@@ -884,7 +734,7 @@ class _SalesRepDashboard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _QuickAction(
-                        icon: Icons.add_circle_outline_rounded,
+                        icon: Icons.add_chart_rounded,
                         label: 'Add Lead',
                         onTap: () => Get.toNamed(AppRoutes.addLead),
                         color: const Color(0xFF4F46E5),
@@ -893,26 +743,17 @@ class _SalesRepDashboard extends StatelessWidget {
                     SizedBox(width: size.width * 0.03),
                     Expanded(
                       child: _QuickAction(
-                        icon: Icons.phone_callback_rounded,
-                        label: 'Call History',
-                        onTap: () => Get.toNamed(AppRoutes.callHistory),
-                        color: const Color(0xFF06B6D4),
-                      ),
-                    ),
-                    SizedBox(width: size.width * 0.03),
-                    Expanded(
-                      child: _QuickAction(
-                        icon: Icons.calendar_today_rounded,
-                        label: 'Schedule',
+                        icon: Icons.history_rounded,
+                        label: 'Activity',
                         onTap: () => Get.toNamed(AppRoutes.activity),
-                        color: const Color(0xFF10B981),
+                        color: const Color(0xFF06B6D4),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            // My leads
+            // Recent assigned leads
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
@@ -924,7 +765,10 @@ class _SalesRepDashboard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('My Leads', style: theme.textTheme.headlineSmall),
+                    Text(
+                      'Assigned Leads',
+                      style: theme.textTheme.headlineSmall,
+                    ),
                     TextButton(
                       onPressed: () => Get.toNamed(AppRoutes.leads),
                       child: Text(
@@ -939,18 +783,20 @@ class _SalesRepDashboard extends StatelessWidget {
               ),
             ),
             Obx(() {
-              final recent = leads.recentLeads;
+              final myLeads = leads.recentLeads.take(6).toList();
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (_, i) => LeadCard(
-                    lead: recent[i],
-                    heroTag: 'rep_${recent[i].id}',
+                    lead: myLeads[i],
+                    heroTag: 'asc_${myLeads[i].id}',
+                    onStatusChanged: (status) =>
+                        leads.updateLeadStatus(myLeads[i].id, status),
                     onTap: () => Get.toNamed(
                       AppRoutes.leadDetail,
-                      arguments: recent[i].id,
+                      arguments: myLeads[i].id,
                     ),
                   ),
-                  childCount: recent.length,
+                  childCount: myLeads.length,
                 ),
               );
             }),
@@ -958,7 +804,7 @@ class _SalesRepDashboard extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const _BottomNav(active: 'dashboard'),
+      bottomNavigationBar: null,
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(AppRoutes.addLead),
         tooltip: 'Add Lead',
@@ -983,28 +829,24 @@ class _QuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: size.width * 0.04),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withValues(alpha: 0.2)),
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: theme.dividerColor),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: size.width * 0.065),
-            SizedBox(height: size.width * 0.015),
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 6),
             Text(
               label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w700,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),

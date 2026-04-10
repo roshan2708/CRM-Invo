@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../modules/activity/activity_controller.dart';
-import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/empty_state_widget.dart';
@@ -86,7 +85,7 @@ class ActivityView extends StatelessWidget {
           },
         );
       }),
-      bottomNavigationBar: _ActivityBottomNav(),
+      bottomNavigationBar: null,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddActivityDialog(context, ctrl),
         tooltip: 'Add Activity',
@@ -227,8 +226,9 @@ class ActivityView extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       if (nameCtrl.text.trim().isEmpty ||
-                          descCtrl.text.trim().isEmpty)
+                          descCtrl.text.trim().isEmpty) {
                         return;
+                      }
                       ctrl.addActivity(
                         ActivityModel(
                           id: 'a${DateTime.now().millisecondsSinceEpoch}',
@@ -393,87 +393,6 @@ class _ActivityCard extends StatelessWidget {
                 color: activity.isDone ? AppColors.success : theme.dividerColor,
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivityBottomNav extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.appBarTheme.backgroundColor,
-        border: Border(top: BorderSide(color: theme.dividerColor)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                icon: Icons.dashboard_rounded,
-                label: 'Dashboard',
-                route: AppRoutes.dashboard,
-              ),
-              _NavItem(
-                icon: Icons.people_outline_rounded,
-                label: 'Leads',
-                route: AppRoutes.leads,
-              ),
-              _NavItem(
-                icon: Icons.event_note_rounded,
-                label: 'Activity',
-                route: AppRoutes.activity,
-                active: true,
-              ),
-              _NavItem(
-                icon: Icons.person_outline_rounded,
-                label: 'Profile',
-                route: AppRoutes.profile,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String route;
-  final bool active;
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-    this.active = false,
-  });
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = active
-        ? theme.colorScheme.primary
-        : theme.textTheme.bodySmall?.color ?? Colors.grey;
-    return GestureDetector(
-      onTap: () {
-        if (!active) Get.offNamed(route);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(color: color),
           ),
         ],
       ),

@@ -177,7 +177,7 @@ class ProfileView extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _ProfileBottomNav(),
+      bottomNavigationBar: null,
     );
   }
 
@@ -339,87 +339,6 @@ class _SettingsTile extends StatelessWidget {
                 ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ProfileBottomNav extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.appBarTheme.backgroundColor,
-        border: Border(top: BorderSide(color: theme.dividerColor)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                icon: Icons.dashboard_rounded,
-                label: 'Dashboard',
-                route: AppRoutes.dashboard,
-              ),
-              _NavItem(
-                icon: Icons.people_outline_rounded,
-                label: 'Leads',
-                route: AppRoutes.leads,
-              ),
-              _NavItem(
-                icon: Icons.event_note_rounded,
-                label: 'Activity',
-                route: AppRoutes.activity,
-              ),
-              _NavItem(
-                icon: Icons.person_outline_rounded,
-                label: 'Profile',
-                route: AppRoutes.profile,
-                active: true,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String route;
-  final bool active;
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-    this.active = false,
-  });
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = active
-        ? theme.colorScheme.primary
-        : theme.textTheme.bodySmall?.color ?? Colors.grey;
-    return GestureDetector(
-      onTap: () {
-        if (!active) Get.offNamed(route);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(color: color),
-          ),
-        ],
       ),
     );
   }

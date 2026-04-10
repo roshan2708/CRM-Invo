@@ -3,21 +3,18 @@ import '../modules/activity/activity_controller.dart';
 import '../modules/auth/auth_controller.dart';
 import '../modules/auth/login_view.dart';
 import '../modules/auth/signup_view.dart';
-import '../modules/dashboard/dashboard_view.dart';
 import '../modules/leads/lead_controller.dart';
-import '../modules/leads/leads_list_view.dart';
 import '../modules/leads/lead_detail_view.dart';
 import '../modules/leads/add_lead_view.dart';
-import '../modules/activity/activity_view.dart';
 import '../modules/onboarding/onboarding_view.dart';
-import '../modules/profile/profile_view.dart';
 import '../modules/settings/settings_view.dart';
 import '../modules/splash/splash_view.dart';
 import '../modules/theme_controller.dart';
 import '../modules/calls/call_controller.dart';
-import '../modules/calls/call_history_view.dart';
 import '../modules/calls/call_detail_view.dart';
 import '../modules/calls/call_analytics_view.dart';
+import '../modules/main/main_view.dart';
+import '../modules/main/main_controller.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -49,8 +46,9 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.dashboard,
-      page: () => const DashboardView(),
+      page: () => const MainView(),
       binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
         Get.lazyPut(() => LeadController(), fenix: true);
         Get.lazyPut(() => ActivityController(), fenix: true);
         Get.lazyPut(() => CallController(), fenix: true);
@@ -59,8 +57,58 @@ class AppPages {
       transitionDuration: const Duration(milliseconds: 400),
     ),
     GetPage(
+      name: AppRoutes.adminDashboard,
+      page: () => const MainView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
+      transition: Transition.fade,
+    ),
+    GetPage(
+      name: AppRoutes.managerDashboard,
+      page: () => const MainView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
+      transition: Transition.fade,
+    ),
+    GetPage(
+      name: AppRoutes.tlDashboard,
+      page: () => const MainView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
+      transition: Transition.fade,
+    ),
+    GetPage(
+      name: AppRoutes.associateDashboard,
+      page: () => const MainView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
+      transition: Transition.fade,
+    ),
+    GetPage(
       name: AppRoutes.leads,
-      page: () => const LeadsListView(),
+      page: () => const MainView(), // Redirect to main (index managed by logic if needed, or just let them land on Dashboard)
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 300),
     ),
@@ -78,13 +126,25 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.activity,
-      page: () => const ActivityView(),
+      page: () => const MainView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.profile,
-      page: () => const ProfileView(),
+      page: () => const MainView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
+        Get.lazyPut(() => CallController(), fenix: true);
+      }),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 300),
     ),
@@ -96,8 +156,11 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.callHistory,
-      page: () => const CallHistoryView(),
+      page: () => const MainView(),
       binding: BindingsBuilder(() {
+        Get.lazyPut(() => MainController());
+        Get.lazyPut(() => LeadController(), fenix: true);
+        Get.lazyPut(() => ActivityController(), fenix: true);
         Get.lazyPut(() => CallController(), fenix: true);
       }),
       transition: Transition.rightToLeft,

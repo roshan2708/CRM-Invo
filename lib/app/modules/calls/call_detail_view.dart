@@ -385,6 +385,7 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final trailingWidget = trailing;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -401,7 +402,7 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(title, style: theme.textTheme.headlineSmall),
               ),
-              if (trailing != null) trailing!,
+              if (trailingWidget != null) trailingWidget,
             ],
           ),
           const SizedBox(height: 12),

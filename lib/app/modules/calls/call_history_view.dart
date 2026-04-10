@@ -147,7 +147,7 @@ class CallHistoryView extends StatelessWidget {
               return ListView.separated(
                 padding: EdgeInsets.all(size.width * 0.04),
                 itemCount: logs.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (_, i) => _CallLogTile(log: logs[i]),
               );
             }),

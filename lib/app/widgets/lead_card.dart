@@ -81,146 +81,148 @@ class LeadCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Left status accent bar ─────────────────────────────────────
-            Container(
-              width: 4,
-              decoration: BoxDecoration(
-                color: sc,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  bottomLeft: Radius.circular(18),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Left status accent bar ─────────────────────────────────────
+              Container(
+                width: 4,
+                decoration: BoxDecoration(
+                  color: sc,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    bottomLeft: Radius.circular(18),
+                  ),
                 ),
               ),
-            ),
-            // ── Main content ───────────────────────────────────────────────
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(size.width * 0.035),
-                child: Row(
-                  children: [
-                    // Avatar
-                    Hero(
-                      tag: heroTag ?? 'avatar_${lead.id}',
-                      child: Container(
-                        width: size.width * 0.12,
-                        height: size.width * 0.12,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              avatarColor,
-                              avatarColor.withValues(alpha: 0.7),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          initials.toUpperCase(),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: size.width * 0.03),
-                    // Info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Name + status dropdown
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  lead.name,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              _StatusDropdown(
-                                currentStatus: lead.status,
-                                onChanged: onStatusChanged,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          // Company
-                          if (lead.company != null)
-                            Text(
-                              lead.company!,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.textTheme.bodySmall?.color
-                                    ?.withValues(alpha: 0.75),
-                              ),
-                              overflow: TextOverflow.ellipsis,
+              // ── Main content ───────────────────────────────────────────────
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(size.width * 0.035),
+                  child: Row(
+                    children: [
+                      // Avatar
+                      Hero(
+                        tag: heroTag ?? 'avatar_${lead.id}_${DateTime.now().millisecondsSinceEpoch}',
+                        child: Container(
+                          width: size.width * 0.12,
+                          height: size.width * 0.12,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                avatarColor,
+                                avatarColor.withValues(alpha: 0.7),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          const SizedBox(height: 6),
-                          // Bottom row: phone + date + badges
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.phone_outlined,
-                                size: 11,
-                                color: theme.textTheme.bodySmall?.color
-                                    ?.withValues(alpha: 0.6),
-                              ),
-                              const SizedBox(width: 3),
-                              Expanded(
-                                child: Text(
-                                  lead.phone,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    fontSize: 11,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          const SizedBox(height: 6),
-                          // Tag row: source, revenue, follow-up date
-                          Wrap(
-                            spacing: 5,
-                            runSpacing: 4,
-                            children: [
-                              if (lead.source != null)
-                                _MiniChip(
-                                  label: lead.source!,
-                                  color: AppColors.primary,
-                                  icon: Icons.source_rounded,
-                                ),
-                              if (hasRevenue)
-                                _MiniChip(
-                                  label:
-                                      '₹${NumberFormat.compact().format(lead.revenue)}',
-                                  color: AppColors.statusConverted,
-                                  icon: Icons.currency_rupee_rounded,
-                                ),
-                              if (hasFollowUp)
-                                _MiniChip(
-                                  label: DateFormat('d MMM')
-                                      .format(lead.followUpDate!),
-                                  color: AppColors.warning,
-                                  icon: Icons.event_rounded,
-                                ),
-                            ],
+                          alignment: Alignment.center,
+                          child: Text(
+                            initials.isNotEmpty ? initials.toUpperCase() : '?',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(width: size.width * 0.03),
+                      // Info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Name + status dropdown
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    lead.name,
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                _StatusDropdown(
+                                  currentStatus: lead.status,
+                                  onChanged: onStatusChanged,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            // Company
+                            if (lead.company != null)
+                              Text(
+                                lead.company!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.textTheme.bodySmall?.color
+                                      ?.withValues(alpha: 0.75),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            const SizedBox(height: 6),
+                            // Bottom row: phone + date + badges
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.phone_outlined,
+                                  size: 11,
+                                  color: theme.textTheme.bodySmall?.color
+                                      ?.withValues(alpha: 0.6),
+                                ),
+                                const SizedBox(width: 3),
+                                Expanded(
+                                  child: Text(
+                                    lead.phone,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontSize: 11,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            // Tag row: source, revenue, follow-up date
+                            Wrap(
+                              spacing: 5,
+                              runSpacing: 4,
+                              children: [
+                                if (lead.source != null)
+                                  _MiniChip(
+                                    label: lead.source!,
+                                    color: AppColors.primary,
+                                    icon: Icons.source_rounded,
+                                  ),
+                                if (hasRevenue)
+                                  _MiniChip(
+                                    label:
+                                        '₹${NumberFormat.compact().format(lead.revenue ?? 0)}',
+                                    color: AppColors.statusConverted,
+                                    icon: Icons.currency_rupee_rounded,
+                                  ),
+                                if (hasFollowUp && lead.followUpDate != null)
+                                  _MiniChip(
+                                    label: DateFormat('d MMM')
+                                        .format(lead.followUpDate!),
+                                    color: AppColors.warning,
+                                    icon: Icons.event_rounded,
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

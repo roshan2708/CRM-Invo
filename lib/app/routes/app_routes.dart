@@ -5,7 +5,11 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String signup = '/signup';
-  static const String dashboard = '/dashboard';
+  static const String adminDashboard = '/admin';
+  static const String managerDashboard = '/manager';
+  static const String tlDashboard = '/tl';
+  static const String associateDashboard = '/associate';
+  static const String dashboard = '/dashboard'; // fallback
   static const String leads = '/leads';
   static const String leadDetail = '/lead-detail';
   static const String addLead = '/add-lead';

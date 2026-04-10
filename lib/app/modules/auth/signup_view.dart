@@ -98,8 +98,9 @@ class SignupView extends StatelessWidget {
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     validator: (val) {
-                      if (val == null || val.isEmpty)
+                      if (val == null || val.isEmpty) {
                         return 'Email is required';
+                      }
                       final regex = RegExp(
                         r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,4}$',
                       );

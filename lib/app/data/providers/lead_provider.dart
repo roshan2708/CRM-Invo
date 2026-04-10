@@ -1,19 +1,14 @@
 import 'dart:io';
 import 'package:get/get.dart';
+import 'base_provider.dart';
 import '../api_constants.dart';
 
-class LeadProvider extends GetConnect {
-  @override
-  void onInit() {
-    httpClient.baseUrl = ApiConstants.baseUrl;
-    super.onInit();
-  }
-
+class LeadProvider extends BaseProvider {
   // Get lead details
   Future<Response> getLead(String id) => get(ApiConstants.leadDetail(id));
 
   // Get lead stats
-  Future<Response> getLeadStats() => get(ApiConstants.leadStats);
+  Future<Response> getLeadStats() => get(ApiConstants.associateStats);
 
   // Update lead status
   Future<Response> updateLeadStatus(String id, String status, String note) =>
