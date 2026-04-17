@@ -227,23 +227,46 @@ class _CalendarLeadsView extends StatelessWidget {
                                 theme: theme,
                                 size: size,
                               )
-                            : ListView.builder(
-                                padding: const EdgeInsets.only(bottom: 100),
-                                itemCount: leads.length,
-                                itemBuilder: (ctx, i) {
-                                  final lead = leads[i];
-                                  return LeadCard(
-                                    lead: lead,
-                                    heroTag: 'cal_${lead.id}',
-                                    onStatusChanged: (status) =>
-                                        ctrl.updateLeadStatus(lead.id, status),
-                                    onTap: () => Get.toNamed(
-                                      AppRoutes.leadDetail,
-                                      arguments: lead.id,
+                            : size.width > 600
+                                ? GridView.builder(
+                                    padding: EdgeInsets.fromLTRB(16, 0, 16, 100),
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: size.width > 900 ? 3 : 2,
+                                      childAspectRatio: size.width > 900 ? 2.5 : 2.2,
+                                      mainAxisSpacing: 10,
+                                      crossAxisSpacing: 10,
                                     ),
-                                  );
-                                },
-                              ),
+                                    itemCount: leads.length,
+                                    itemBuilder: (ctx, i) {
+                                      final lead = leads[i];
+                                      return LeadCard(
+                                          lead: lead,
+                                          heroTag: 'cal_${lead.id}',
+                                          onStatusChanged: (status) =>
+                                              ctrl.updateLeadStatus(lead.id, status),
+                                          onTap: () => Get.toNamed(
+                                                AppRoutes.leadDetail,
+                                                arguments: lead.id,
+                                              ));
+                                    },
+                                  )
+                                : ListView.builder(
+                                    padding: const EdgeInsets.only(bottom: 100),
+                                    itemCount: leads.length,
+                                    itemBuilder: (ctx, i) {
+                                      final lead = leads[i];
+                                      return LeadCard(
+                                        lead: lead,
+                                        heroTag: 'cal_${lead.id}',
+                                        onStatusChanged: (status) =>
+                                            ctrl.updateLeadStatus(lead.id, status),
+                                        onTap: () => Get.toNamed(
+                                          AppRoutes.leadDetail,
+                                          arguments: lead.id,
+                                        ),
+                                      );
+                                    },
+                                  ),
                       ),
                     ],
                   );
@@ -436,6 +459,31 @@ class _ListLeadsView extends StatelessWidget {
                       width: size.width * 0.45,
                       onPressed: () => Get.toNamed(AppRoutes.addLead),
                     ),
+                  );
+                }
+                if (size.width > 600) {
+                  return GridView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: size.width > 900 ? 3 : 2,
+                      childAspectRatio: size.width > 900 ? 2.5 : 2.2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    itemCount: ctrl.filteredLeads.length,
+                    itemBuilder: (ctx, i) {
+                      final lead = ctrl.filteredLeads[i];
+                      return LeadCard(
+                        lead: lead,
+                        heroTag: 'list_${lead.id}',
+                        onStatusChanged: (status) =>
+                            ctrl.updateLeadStatus(lead.id, status),
+                        onTap: () => Get.toNamed(
+                          AppRoutes.leadDetail,
+                          arguments: lead.id,
+                        ),
+                      );
+                    },
                   );
                 }
                 return ListView.builder(

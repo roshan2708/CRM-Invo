@@ -106,8 +106,8 @@ class LeadCard extends StatelessWidget {
                       Hero(
                         tag: heroTag ?? 'avatar_${lead.id}_${DateTime.now().millisecondsSinceEpoch}',
                         child: Container(
-                          width: size.width * 0.12,
-                          height: size.width * 0.12,
+                          width: (size.width > 600 ? 52.0 : size.width * 0.12).clamp(32.0, 52.0),
+                          height: (size.width > 600 ? 52.0 : size.width * 0.12).clamp(32.0, 52.0),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
@@ -125,6 +125,7 @@ class LeadCard extends StatelessWidget {
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: AppColors.white,
                               fontWeight: FontWeight.w800,
+                              fontSize: size.width > 600 ? 18 : null,
                             ),
                           ),
                         ),
@@ -143,6 +144,7 @@ class LeadCard extends StatelessWidget {
                                     lead.name,
                                     style: theme.textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.w700,
+                                      fontSize: size.width > 600 ? 16 : null,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -179,7 +181,7 @@ class LeadCard extends StatelessWidget {
                                   child: Text(
                                     lead.phone,
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      fontSize: 11,
+                                      fontSize: size.width > 600 ? 13 : 11,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -255,12 +257,16 @@ class _MiniChip extends StatelessWidget {
         children: [
           Icon(icon, size: 9, color: color),
           const SizedBox(width: 3),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              color: color,
-              fontWeight: FontWeight.w600,
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

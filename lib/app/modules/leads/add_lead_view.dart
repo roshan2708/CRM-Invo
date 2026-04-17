@@ -160,204 +160,209 @@ class _AddLeadViewState extends State<AddLeadView> {
 
     return Scaffold(
       appBar: CustomAppBar(title: _isEdit ? 'Edit Lead' : 'Add New Lead'),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: size.width * 0.05,
-          vertical: size.width * 0.04,
-        ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomTextField(
-                label: 'Full Name *',
-                hint: 'Lead full name',
-                controller: _nameCtrl,
-                prefixIcon: Icons.person_outline_rounded,
-                textInputAction: TextInputAction.next,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Name is required' : null,
-              ),
-              SizedBox(height: size.height * 0.025),
-              CustomTextField(
-                label: 'Phone *',
-                hint: '+91 XXXXX XXXXX',
-                controller: _phoneCtrl,
-                prefixIcon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                enabled: _canEditSensitive || _phoneCtrl.text.isEmpty,
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Phone is required'
-                    : null,
-              ),
-              if (!_canEditSensitive && _phoneCtrl.text.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, left: 4),
-                  child: Text(
-                    'Only admin can edit phone number',
-                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
-                  ),
-                ),
-              SizedBox(height: size.height * 0.025),
-              CustomTextField(
-                label: 'Email *',
-                hint: 'email@example.com',
-                controller: _emailCtrl,
-                prefixIcon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                enabled: _canEditSensitive || _emailCtrl.text.isEmpty,
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Email is required';
-                  if (!RegExp(
-                    r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,4}$',
-                  ).hasMatch(v.trim())) {
-                    return 'Invalid email';
-                  }
-                  return null;
-                },
-              ),
-              if (!_canEditSensitive && _emailCtrl.text.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, left: 4),
-                  child: Text(
-                    'Only admin can edit email',
-                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
-                  ),
-                ),
-              SizedBox(height: size.height * 0.025),
-              CustomTextField(
-                label: 'Company',
-                hint: 'Company name (optional)',
-                controller: _companyCtrl,
-                prefixIcon: Icons.business_outlined,
-                textInputAction: TextInputAction.next,
-              ),
-              SizedBox(height: size.height * 0.025),
-              CustomTextField(
-                label: 'Lead Source',
-                hint: 'e.g. LinkedIn, Website, Referral',
-                controller: _sourceCtrl,
-                prefixIcon: Icons.source_outlined,
-                textInputAction: TextInputAction.next,
-              ),
-              SizedBox(height: size.height * 0.025),
-              Row(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 650),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.05,
+              vertical: size.width * 0.04,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'Revenue (₹)',
-                      hint: '0',
-                      controller: _revenueCtrl,
-                      prefixIcon: Icons.currency_rupee_rounded,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.next,
-                    ),
+                  CustomTextField(
+                    label: 'Full Name *',
+                    hint: 'Lead full name',
+                    controller: _nameCtrl,
+                    prefixIcon: Icons.person_outline_rounded,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Name is required' : null,
                   ),
-                  SizedBox(width: size.width * 0.03),
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'Calls Connected',
-                      hint: '0',
-                      controller: _callsCtrl,
-                      prefixIcon: Icons.call_made_rounded,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.next,
-                    ),
+                  SizedBox(height: size.height * 0.025),
+                  CustomTextField(
+                    label: 'Phone *',
+                    hint: '+91 XXXXX XXXXX',
+                    controller: _phoneCtrl,
+                    prefixIcon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    enabled: _canEditSensitive || _phoneCtrl.text.isEmpty,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Phone is required'
+                        : null,
                   ),
-                ],
-              ),
-              SizedBox(height: size.height * 0.025),
-              // Status
-              Text('Status', style: theme.textTheme.labelLarge),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: LeadStatus.values.map((s) {
-                  final sel = _selectedStatus == s;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedStatus = s),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: sel
-                            ? theme.colorScheme.primary
-                            : theme.cardColor,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: sel
-                              ? theme.colorScheme.primary
-                              : theme.dividerColor,
-                        ),
-                      ),
+                  if (!_canEditSensitive && _phoneCtrl.text.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 4),
                       child: Text(
-                        s.label,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: sel
-                              ? AppColors.white
-                              : theme.textTheme.bodyMedium?.color,
-                          fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
-                        ),
+                        'Only admin can edit phone number',
+                        style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: size.height * 0.025),
-              // Date
-              Text('Date', style: theme.textTheme.labelLarge),
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: _pickDate,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                  SizedBox(height: size.height * 0.025),
+                  CustomTextField(
+                    label: 'Email *',
+                    hint: 'email@example.com',
+                    controller: _emailCtrl,
+                    prefixIcon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    enabled: _canEditSensitive || _emailCtrl.text.isEmpty,
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) return 'Email is required';
+                      if (!RegExp(
+                        r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,4}$',
+                      ).hasMatch(v.trim())) {
+                        return 'Invalid email';
+                      }
+                      return null;
+                    },
                   ),
-                  decoration: BoxDecoration(
-                    color: theme.inputDecorationTheme.fillColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.dividerColor),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 18,
-                        color: theme.colorScheme.primary,
+                  if (!_canEditSensitive && _emailCtrl.text.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 4),
+                      child: Text(
+                        'Only admin can edit email',
+                        style: theme.textTheme.bodySmall?.copyWith(color: AppColors.error),
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        DateFormat('dd MMM yyyy').format(_selectedDate),
-                        style: theme.textTheme.bodyMedium,
+                    ),
+                  SizedBox(height: size.height * 0.025),
+                  CustomTextField(
+                    label: 'Company',
+                    hint: 'Company name (optional)',
+                    controller: _companyCtrl,
+                    prefixIcon: Icons.business_outlined,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: size.height * 0.025),
+                  CustomTextField(
+                    label: 'Lead Source',
+                    hint: 'e.g. LinkedIn, Website, Referral',
+                    controller: _sourceCtrl,
+                    prefixIcon: Icons.source_outlined,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: size.height * 0.025),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextField(
+                          label: 'Revenue (₹)',
+                          hint: '0',
+                          controller: _revenueCtrl,
+                          prefixIcon: Icons.currency_rupee_rounded,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: CustomTextField(
+                          label: 'Calls Connected',
+                          hint: '0',
+                          controller: _callsCtrl,
+                          prefixIcon: Icons.call_made_rounded,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                        ),
                       ),
                     ],
                   ),
-                ),
+                  SizedBox(height: size.height * 0.025),
+                  // Status
+                  Text('Status', style: theme.textTheme.labelLarge),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: LeadStatus.values.map((s) {
+                      final sel = _selectedStatus == s;
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedStatus = s),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: sel
+                                ? theme.colorScheme.primary
+                                : theme.cardColor,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: sel
+                                  ? theme.colorScheme.primary
+                                  : theme.dividerColor,
+                            ),
+                          ),
+                          child: Text(
+                            s.label,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: sel
+                                  ? AppColors.white
+                                  : theme.textTheme.bodyMedium?.color,
+                              fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: size.height * 0.025),
+                  // Date
+                  Text('Date', style: theme.textTheme.labelLarge),
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: _pickDate,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.inputDecorationTheme.fillColor,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: theme.dividerColor),
+                      ),
+                      child: Row(
+                        children:[
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            DateFormat('dd MMM yyyy').format(_selectedDate),
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.025),
+                  CustomTextField(
+                    label: 'Notes',
+                    hint: 'Any additional notes...',
+                    controller: _notesCtrl,
+                    maxLines: 4,
+                    textInputAction: TextInputAction.newline,
+                  ),
+                  SizedBox(height: size.height * 0.04),
+                  CustomButton(
+                    label: _isEdit ? 'Save Changes' : 'Add Lead',
+                    icon: _isEdit ? Icons.save_rounded : Icons.add_rounded,
+                    onPressed: _save,
+                  ),
+                  SizedBox(height: size.height * 0.04),
+                ],
               ),
-              SizedBox(height: size.height * 0.025),
-              CustomTextField(
-                label: 'Notes',
-                hint: 'Any additional notes...',
-                controller: _notesCtrl,
-                maxLines: 4,
-                textInputAction: TextInputAction.newline,
-              ),
-              SizedBox(height: size.height * 0.04),
-              CustomButton(
-                label: _isEdit ? 'Save Changes' : 'Add Lead',
-                icon: _isEdit ? Icons.save_rounded : Icons.add_rounded,
-                onPressed: _save,
-              ),
-              SizedBox(height: size.height * 0.04),
-            ],
+            ),
           ),
         ),
       ),

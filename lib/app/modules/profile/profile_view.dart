@@ -32,149 +32,154 @@ class ProfileView extends StatelessWidget {
           SizedBox(width: size.width * 0.02),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Avatar + info header
-            Obx(() {
-              final user = auth.currentUser.value;
-              final initials = user.name
-                  .split(' ')
-                  .take(2)
-                  .map((e) => e[0])
-                  .join();
-              return Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(
-                  vertical: size.height * 0.04,
-                  horizontal: size.width * 0.06,
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: size.width * 0.25,
-                      height: size.width * 0.25,
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryBackground,
-                        borderRadius: BorderRadius.circular(size.width * 0.07),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 750),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Avatar + info header
+                Obx(() {
+                  final user = auth.currentUser.value;
+                  final initials = user.name
+                      .split(' ')
+                      .take(2)
+                      .map((e) => e[0])
+                      .join();
+                  return Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                      vertical: size.height * 0.04,
+                      horizontal: size.width * 0.06,
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: size.width > 600 ? 120 : size.width * 0.25,
+                          height: size.width > 600 ? 120 : size.width * 0.25,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBackground,
+                            borderRadius: BorderRadius.circular(size.width > 600 ? 32 : size.width * 0.07),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.3),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        initials.toUpperCase(),
-                        style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: size.width * 0.1,
-                          fontWeight: FontWeight.w800,
+                          alignment: Alignment.center,
+                          child: Text(
+                            initials.toUpperCase(),
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: size.width > 600 ? 44 : size.width * 0.1,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 24),
+                        Text(user.name, style: theme.textTheme.headlineLarge),
+                        const SizedBox(height: 4),
+                        Text(
+                          user.role,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(user.email, style: theme.textTheme.bodySmall),
+                      ],
                     ),
-                    SizedBox(height: size.width * 0.04),
-                    Text(user.name, style: theme.textTheme.headlineLarge),
-                    const SizedBox(height: 4),
-                    Text(
-                      user.role,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  );
+                }),
+                // Stats row
+                Obx(
+                  () => Container(
+                    margin: EdgeInsets.symmetric(horizontal: size.width * 0.04),
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: theme.dividerColor),
                     ),
-                    const SizedBox(height: 4),
-                    Text(user.email, style: theme.textTheme.bodySmall),
-                  ],
+                    child: Row(
+                      children: [
+                        _StatItem(
+                          value: leads.totalLeads.toString(),
+                          label: 'Total Leads',
+                        ),
+                        _Divider(),
+                        _StatItem(
+                          value: leads.convertedLeads.toString(),
+                          label: 'Converted',
+                        ),
+                        _Divider(),
+                        _StatItem(
+                          value: activities.pendingCount.toString(),
+                          label: 'Pending',
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              );
-            }),
-            // Stats row
-            Obx(
-              () => Container(
-                margin: EdgeInsets.symmetric(horizontal: size.width * 0.04),
-                padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.dividerColor),
-                ),
-                child: Row(
-                  children: [
-                    _StatItem(
-                      value: leads.totalLeads.toString(),
-                      label: 'Total Leads',
+                SizedBox(height: 32),
+                // Settings section
+                _SectionTitle('Preferences', theme: theme, size: size),
+                // Dark mode toggle
+                Obx(
+                  () => _SettingsTile(
+                    icon: themeCtrl.isDarkMode.value
+                        ? Icons.dark_mode_rounded
+                        : Icons.light_mode_rounded,
+                    title: 'Dark Mode',
+                    subtitle: themeCtrl.isDarkMode.value ? 'On' : 'Off',
+                    trailing: Switch(
+                      value: themeCtrl.isDarkMode.value,
+                      onChanged: (_) => themeCtrl.toggleTheme(),
+                      activeThumbColor: theme.colorScheme.primary,
                     ),
-                    _Divider(),
-                    _StatItem(
-                      value: leads.convertedLeads.toString(),
-                      label: 'Converted',
-                    ),
-                    _Divider(),
-                    _StatItem(
-                      value: activities.pendingCount.toString(),
-                      label: 'Pending',
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            SizedBox(height: size.height * 0.03),
-            // Settings section
-            _SectionTitle('Preferences', theme: theme, size: size),
-            // Dark mode toggle
-            Obx(
-              () => _SettingsTile(
-                icon: themeCtrl.isDarkMode.value
-                    ? Icons.dark_mode_rounded
-                    : Icons.light_mode_rounded,
-                title: 'Dark Mode',
-                subtitle: themeCtrl.isDarkMode.value ? 'On' : 'Off',
-                trailing: Switch(
-                  value: themeCtrl.isDarkMode.value,
-                  onChanged: (_) => themeCtrl.toggleTheme(),
-                  activeThumbColor: theme.colorScheme.primary,
+                _SectionTitle('Account', theme: theme, size: size),
+                _SettingsTile(
+                  icon: Icons.person_outline_rounded,
+                  title: 'Edit Profile',
+                  subtitle: 'Update your information',
+                  onTap: () {},
                 ),
-              ),
+                _SettingsTile(
+                  icon: Icons.lock_outline_rounded,
+                  title: 'Change Password',
+                  subtitle: 'Keep your account secure',
+                  onTap: () {},
+                ),
+                _SettingsTile(
+                  icon: Icons.notifications_none_rounded,
+                  title: 'Notifications',
+                  subtitle: 'Manage alerts & reminders',
+                  onTap: () {},
+                ),
+                _SectionTitle('More', theme: theme, size: size),
+                _SettingsTile(
+                  icon: Icons.settings_outlined,
+                  title: 'Settings',
+                  subtitle: 'App configuration',
+                  onTap: () => Get.toNamed(AppRoutes.settings),
+                ),
+                _SettingsTile(
+                  icon: Icons.logout_rounded,
+                  title: 'Log Out',
+                  subtitle: 'Sign out from your account',
+                  iconColor: AppColors.error,
+                  titleColor: AppColors.error,
+                  onTap: () => _confirmLogout(context, auth),
+                ),
+                SizedBox(height: 64),
+              ],
             ),
-            _SectionTitle('Account', theme: theme, size: size),
-            _SettingsTile(
-              icon: Icons.person_outline_rounded,
-              title: 'Edit Profile',
-              subtitle: 'Update your information',
-              onTap: () {},
-            ),
-            _SettingsTile(
-              icon: Icons.lock_outline_rounded,
-              title: 'Change Password',
-              subtitle: 'Keep your account secure',
-              onTap: () {},
-            ),
-            _SettingsTile(
-              icon: Icons.notifications_none_rounded,
-              title: 'Notifications',
-              subtitle: 'Manage alerts & reminders',
-              onTap: () {},
-            ),
-            _SectionTitle('More', theme: theme, size: size),
-            _SettingsTile(
-              icon: Icons.settings_outlined,
-              title: 'Settings',
-              subtitle: 'App configuration',
-              onTap: () => Get.toNamed(AppRoutes.settings),
-            ),
-            _SettingsTile(
-              icon: Icons.logout_rounded,
-              title: 'Log Out',
-              subtitle: 'Sign out from your account',
-              iconColor: AppColors.error,
-              titleColor: AppColors.error,
-              onTap: () => _confirmLogout(context, auth),
-            ),
-            SizedBox(height: size.height * 0.08),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: null,

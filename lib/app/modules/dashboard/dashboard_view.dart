@@ -200,29 +200,36 @@ class _StatCard extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                size: size.width * 0.05,
+                size: (size.width * 0.05).clamp(18.0, 24.0),
                 color: AppColors.white,
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: size.width * 0.065,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.white,
-                    letterSpacing: -1,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: (size.width * 0.065).clamp(20.0, 32.0),
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.white,
+                      letterSpacing: -1,
+                    ),
                   ),
                 ),
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: size.width * 0.03,
+                    fontSize: (size.width * 0.03).clamp(10.0, 14.0),
                     color: AppColors.white.withValues(alpha: 0.85),
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -264,10 +271,10 @@ class _AdminDashboard extends StatelessWidget {
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
+                    crossAxisCount: size.width > 900 ? 4 : (size.width > 600 ? 3 : 2),
                     crossAxisSpacing: size.width * 0.03,
                     mainAxisSpacing: size.width * 0.03,
-                    childAspectRatio: 1.5,
+                    childAspectRatio: size.width > 600 ? 1.3 : 1.5,
                     children: [
                       _StatCard(
                         label: 'Total Leads',
@@ -412,6 +419,33 @@ class _AdminDashboard extends StatelessWidget {
             ),
             Obx(() {
               final recent = leads.recentLeads;
+              final isTablet = size.width > 600;
+              if (isTablet) {
+                return SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
+                  sliver: SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: size.width > 900 ? 3 : 2,
+                      childAspectRatio: size.width > 900 ? 2.3 : 2.0,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (_, i) => LeadCard(
+                        lead: recent[i],
+                        heroTag: 'admin_${recent[i].id}',
+                        onStatusChanged: (status) =>
+                            leads.updateLeadStatus(recent[i].id, status),
+                        onTap: () => Get.toNamed(
+                          AppRoutes.leadDetail,
+                          arguments: recent[i].id,
+                        ),
+                      ),
+                      childCount: recent.length,
+                    ),
+                  ),
+                );
+              }
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (_, i) => LeadCard(
@@ -473,10 +507,10 @@ class _ManagerDashboard extends StatelessWidget {
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
+                    crossAxisCount: size.width > 600 ? 4 : 2,
                     crossAxisSpacing: size.width * 0.03,
                     mainAxisSpacing: size.width * 0.03,
-                    childAspectRatio: 1.55,
+                    childAspectRatio: size.width > 600 ? 1.3 : 1.55,
                     children: [
                       _StatCard(
                         label: 'Total Leads',
@@ -642,6 +676,33 @@ class _ManagerDashboard extends StatelessWidget {
             ),
             Obx(() {
               final recent = leads.recentLeads;
+              final isTablet = size.width > 600;
+              if (isTablet) {
+                return SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
+                  sliver: SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: size.width > 900 ? 3 : 2,
+                      childAspectRatio: size.width > 900 ? 2.3 : 2.0,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (_, i) => LeadCard(
+                        lead: recent[i],
+                        heroTag: 'mgr_${recent[i].id}',
+                        onStatusChanged: (status) =>
+                            leads.updateLeadStatus(recent[i].id, status),
+                        onTap: () => Get.toNamed(
+                          AppRoutes.leadDetail,
+                          arguments: recent[i].id,
+                        ),
+                      ),
+                      childCount: recent.length,
+                    ),
+                  ),
+                );
+              }
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (_, i) => LeadCard(
@@ -709,10 +770,10 @@ class _AssociateDashboard extends StatelessWidget {
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
+                    crossAxisCount: size.width > 600 ? 4 : 2,
                     crossAxisSpacing: size.width * 0.03,
                     mainAxisSpacing: size.width * 0.03,
-                    childAspectRatio: 1.5,
+                    childAspectRatio: size.width > 600 ? 1.3 : 1.5,
                     children: [
                       _StatCard(
                         label: 'My Leads',
@@ -809,6 +870,33 @@ class _AssociateDashboard extends StatelessWidget {
             ),
             Obx(() {
               final myLeads = leads.recentLeads.take(6).toList();
+              final isTablet = size.width > 600;
+              if (isTablet) {
+                return SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
+                  sliver: SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: size.width > 900 ? 3 : 2,
+                      childAspectRatio: size.width > 900 ? 2.3 : 2.0,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (_, i) => LeadCard(
+                        lead: myLeads[i],
+                        heroTag: 'asc_${myLeads[i].id}',
+                        onStatusChanged: (status) =>
+                            leads.updateLeadStatus(myLeads[i].id, status),
+                        onTap: () => Get.toNamed(
+                          AppRoutes.leadDetail,
+                          arguments: myLeads[i].id,
+                        ),
+                      ),
+                      childCount: myLeads.length,
+                    ),
+                  ),
+                );
+              }
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (_, i) => LeadCard(

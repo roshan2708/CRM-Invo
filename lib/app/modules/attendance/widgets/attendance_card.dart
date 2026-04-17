@@ -16,129 +16,134 @@ class AttendanceCard extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Obx(() {
-          final isPunchedIn = attendanceCtrl.isPunchedIn;
-          final isLoading = attendanceCtrl.isLoading.value;
-          final record = attendanceCtrl.currentRecord.value;
-          final user = authCtrl.currentUser.value;
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Obx(() {
+              final isPunchedIn = attendanceCtrl.isPunchedIn;
+              final isLoading = attendanceCtrl.isLoading.value;
+              final record = attendanceCtrl.currentRecord.value;
+              final user = authCtrl.currentUser.value;
+    
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header Row
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: isPunchedIn
-                              ? const Color(0xFF25D366) // Green
-                              : AppColors.error,
-                          shape: BoxShape.circle,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: isPunchedIn
+                                  ? const Color(0xFF25D366) // Green
+                                  : AppColors.error,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            isPunchedIn ? 'Punched In' : 'Not Punched In',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
                       Text(
-                        isPunchedIn ? 'Punched In' : 'Not Punched In',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+                        user.name,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-                  Text(
-                    user.name,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
+    
+                  if (record != null) ...[
+                    const SizedBox(height: 16),
+                    _BuildDetailRow(
+                      icon: Icons.login_rounded,
+                      label: 'In',
+                      time: record.punchInFormatted,
+                      location: record.punchInLocation,
+                    ),
+                    if (record.isPunchedOut) ...[
+                      const SizedBox(height: 12),
+                      _BuildDetailRow(
+                        icon: Icons.logout_rounded,
+                        label: 'Out',
+                        time: record.punchOutFormatted,
+                        location: record.punchOutLocation ?? 'Unknown',
+                      ),
+                    ]
+                  ],
+    
+                  const SizedBox(height: 20),
+    
+                  // Action Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              if (isPunchedIn) {
+                                attendanceCtrl.punchOut();
+                              } else {
+                                attendanceCtrl.punchIn();
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isPunchedIn
+                            ? AppColors.error
+                            : const Color(0xFF25D366),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              isPunchedIn ? 'PUNCH OUT' : 'PUNCH IN',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
                     ),
                   ),
                 ],
-              ),
-
-              if (record != null) ...[
-                const SizedBox(height: 16),
-                _BuildDetailRow(
-                  icon: Icons.login_rounded,
-                  label: 'In',
-                  time: record.punchInFormatted,
-                  location: record.punchInLocation,
-                ),
-                if (record.isPunchedOut) ...[
-                  const SizedBox(height: 12),
-                  _BuildDetailRow(
-                    icon: Icons.logout_rounded,
-                    label: 'Out',
-                    time: record.punchOutFormatted,
-                    location: record.punchOutLocation ?? 'Unknown',
-                  ),
-                ]
-              ],
-
-              const SizedBox(height: 20),
-
-              // Action Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          if (isPunchedIn) {
-                            attendanceCtrl.punchOut();
-                          } else {
-                            attendanceCtrl.punchIn();
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isPunchedIn
-                        ? AppColors.error
-                        : const Color(0xFF25D366),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          isPunchedIn ? 'PUNCH OUT' : 'PUNCH IN',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                ),
-              ),
-            ],
-          );
-        }),
+              );
+            }),
+          ),
+        ),
       ),
     );
   }

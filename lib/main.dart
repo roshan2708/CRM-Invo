@@ -25,7 +25,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeBackgroundService();
   
-  // Register Providers first
+  // Register Providers firstm
   Get.put(AuthProvider(), permanent: true);
   Get.put(LeadProvider(), permanent: true);
   Get.put(AttendanceProvider(), permanent: true);
@@ -43,10 +43,11 @@ void main() async {
   Get.put(CallController(), permanent: true);
   Get.put(AttendanceController(), permanent: true);
 
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]).then((_) => runApp(const CRMApp()));
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]).then((_) => runApp(const CRMApp()));
+  runApp(const CRMApp());
 }
 
 class CRMApp extends StatelessWidget {
